@@ -110,3 +110,15 @@
   font-weight: 900;
   font-style: italic;
 }
+
+.bg-gray1 {
+    background-color: #121212;
+}
+
+.bg-gray2 {
+    background-color: #1F1F1F;
+}
+
+.bg-gray3 {
+    background-color: #2a2a2a;
+}
