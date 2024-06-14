@@ -6,6 +6,7 @@ import GuessByListening from "./guess_by_listening/GuessByListening"
 import GuessByAlbumCover from "./guess_by_album_cover/GuessByAlbumCover";
 
 const App: React.FC = () => {
+
   return (
     <Router>
 
@@ -17,6 +18,7 @@ const App: React.FC = () => {
     </Router>
   );
 };
+
 
 const Home: React.FC = () => (
   <div className="h-screen text-green-500 text-center bg-gray1 poppins-semibold">
