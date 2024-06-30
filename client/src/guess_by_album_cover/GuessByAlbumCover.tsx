@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import inRainbow from "../../public/by_Inrainbowscover_test.png";
+import { Link } from "react-router-dom";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -41,11 +42,16 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
   };
 
   return (
-    <div className="h-screen flex flex-col items-center bg-gray1 poppins-semibold p-4 relative">
-      <h2 className="text-5xl text-center text-green-500 mt-4 mb-5">
+    <div className="h-screen flex flex-col justify-center items-center bg-gray1 poppins-semibold p-4 relative">
+      <div className="absolute top-6 right-4">
+        <Link to="/" className="text-white bg-gray2 p-2 rounded">
+          Home
+        </Link>
+      </div>
+      <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      <div className="mt-48 relative flex items-center">
+      <div className="relative flex items-center mt-16">
         <img
           className="mx-auto border rounded p-2 w-80 h-80"
           src={inRainbow}
@@ -56,14 +62,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
             <div
               key={index}
               className={`w-full h-full ${visiblePanels.includes(index)
-                  ? "bg-transparent"
-                  : "backdrop-filter backdrop-blur-md"
+                ? "bg-transparent"
+                : "backdrop-filter backdrop-blur-md"
                 }`}
             />
           ))}
         </div>
       </div>
-      <div className="flex mt-4">
+      <div className="flex mt-16">
         <input
           className="p-2 rounded-lg mr-1"
           type="text"
@@ -72,7 +78,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
         />
         <button
           onClick={handleChange}
-          className="p-2 bg-blue-500 hover:bg-slate-600 text-white rounded-lg flex items-center"
+          className="p-2 bg-blue-500 hover:bg-slate-600 text-white rounded-lg flex items-center ml-4"
         >
           Submit
         </button>

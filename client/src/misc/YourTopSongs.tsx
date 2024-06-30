@@ -49,8 +49,8 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
                     Home
                 </Link>
             </div>
-            <h2 className="text-5xl mt-4">Guess By Listening</h2>
-            <div className="w-full max-w-4xl flex-grow grid grid-cols-4 gap-4 justify-items-center mt-8">
+            <h2 className="text-3xl mt-4">Your Top Songs</h2>
+            <div className="w-auto max-w-4xl flex-grow grid grid-cols-4 gap-4 justify-items-center mt-8">
                 {topTracks.map((track, index) => (
                     <div key={index} className="p-4 border rounded-xl cursor-pointer flex flex-col items-center w-52">
                         <img src={track.album.images[0].url} alt={track.name} className="w-16 h-16 mx-auto mb-2" />
