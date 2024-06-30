@@ -1,4 +1,3 @@
-// App.tsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GuessByListening from "./guess_by_listening/GuessByListening";
@@ -11,20 +10,30 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/guess-by-listening" element={<GuessByListening />} />
-          <Route path="/guess-by-album-cover" element={<GuessByAlbumCover />} />
-        </Routes>
+        <AppRoutes />
       </Router>
     </AuthProvider>
   );
 };
 
-const Main: React.FC = () => {
+const AppRoutes: React.FC = () => {
   const { accessToken } = useAuth();
 
-  return accessToken ? <Home accessToken={accessToken} /> : <Login />;
+  if (!accessToken) {
+    return (
+      <Routes>
+        <Route path="*" element={<Login />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home accessToken={accessToken} />} />
+      <Route path="/guess-by-listening" element={<GuessByListening accessToken={accessToken} />} />
+      <Route path="/guess-by-album-cover" element={<GuessByAlbumCover accessToken={accessToken} />} />
+    </Routes>
+  );
 };
 
 export default App;

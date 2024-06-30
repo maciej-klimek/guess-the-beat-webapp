@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { FaHeart } from "react-icons/fa"; // Importuj ikonę serca
+import { FaHeart } from "react-icons/fa";
 import inRainbow from "../../public/by_Inrainbowscover_test.png";
 
-const GuessByAlbumCover: React.FC = () => {
+interface GuessByAlbumCoverProps {
+  accessToken: string;
+}
+
+const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) => {
   const [visiblePanels, setVisiblePanels] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState("");
   const albumName = "123";
@@ -37,7 +41,7 @@ const GuessByAlbumCover: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center bg-gray1 poppins-semibold">
+    <div className="h-screen flex flex-col items-center bg-gray1 poppins-semibold p-4 relative">
       <h2 className="text-5xl text-center text-green-500 mt-4 mb-5">
         Guess By Album Cover
       </h2>
@@ -51,11 +55,10 @@ const GuessByAlbumCover: React.FC = () => {
           {Array.from({ length: 9 }, (_, index) => (
             <div
               key={index}
-              className={`w-full h-full ${
-                visiblePanels.includes(index)
+              className={`w-full h-full ${visiblePanels.includes(index)
                   ? "bg-transparent"
                   : "backdrop-filter backdrop-blur-md"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -75,11 +78,14 @@ const GuessByAlbumCover: React.FC = () => {
         </button>
       </div>
       <div className="mt-4 flex">
-        <FaHeart className="size-10 text-red-600 mr-1" />
-        <FaHeart className="size-10 text-red-600 mr-1" />
-        <FaHeart className="size-10 text-red-600 mr-1" />
-        <FaHeart className="size-10 text-red-600 mr-1" />
-        <FaHeart className="size-10 text-red-600 mr-1" />
+        <FaHeart className="text-red-600 mr-1" />
+        <FaHeart className="text-red-600 mr-1" />
+        <FaHeart className="text-red-600 mr-1" />
+        <FaHeart className="text-red-600 mr-1" />
+        <FaHeart className="text-red-600 mr-1" />
+      </div>
+      <div className="break-words w-full text-zinc-800 absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
+        Access Token: {accessToken}
       </div>
     </div>
   );
