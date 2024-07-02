@@ -2,13 +2,41 @@ import { Link } from "react-router-dom";
 import ByListeningPanel from "./selection_panels/ByListeningPanel";
 import ByAlbumCoverPanel from "./selection_panels/ByAlbumCoverPanel";
 import Settings from "./Settings";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface HomeProps {
     accessToken: string | null;
 }
 
+interface User {
+    display_name: string;
+}
+
 const Home: React.FC<HomeProps> = ({ accessToken }) => {
-    console.log(accessToken);
+    // console.log(accessToken);    
+    const [userData, setUserData] = useState<User | null>(null);
+    
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get("https://api.spotify.com/v1/me", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setUserData(response.data);
+            } catch (error) {
+                console.error("Error fetching top tracks:", error);
+            }
+        };
+
+        if (accessToken){
+            fetchUserData();
+        }
+    }, [accessToken]);
+
+    console.log(userData?.display_name);
 
     return (
         <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
