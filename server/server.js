@@ -19,10 +19,7 @@ const bodyParser = require("body-parser");
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const app = express();
-app.use(cors({
-    origin: "http://localhost:5137",
-    methods: ["POST","GET"],
-}));
+app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/login", (req, res) => {
@@ -50,10 +47,11 @@ app.post("/login", (req, res) => {
 
 app.post("/store-user-data", (req, res) => {
     const { User_ID, displayName } = req.body;
-
+    console.log("User body", req.body);
+    console.log("User_ID: ", User_ID);
     const params = {
         TableName: 'Users',
-        Key: { UserId: User_ID },
+        Key: { User_ID: User_ID, Score: 0 },
         UpdateExpression: 'set displayName = :d',
         ExpressionAttributeValues: {
             ':d': displayName,

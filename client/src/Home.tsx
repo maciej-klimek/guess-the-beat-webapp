@@ -26,8 +26,13 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                     },
                 });
                 setUserData(response.data);
+                console.log("User data" + response.data.display_name);
+                await axios.post("http://localhost:2115/store-user-data", {
+                    User_ID: response.data.id,
+                    displayName: response.data.display_name,
+                  });
             } catch (error) {
-                console.error("Error fetching top tracks:", error);
+                console.error("Error fetching user data:", error);
             }
         };
 
