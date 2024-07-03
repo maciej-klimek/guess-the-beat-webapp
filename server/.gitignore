@@ -23,6 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-
-
-sekrecik.json
+.env

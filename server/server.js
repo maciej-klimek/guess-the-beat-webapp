@@ -1,6 +1,6 @@
 //zeby odpalic: npm run devStart
 
-const sekrecik = require("./sekrecik.json");
+require('dotenv').config()
 
 const express = require('express');
 const cors = require("cors");
@@ -16,7 +16,7 @@ app.post("/login", (req, res) => {
     const spotifyApi = new SpotifyWebApi({
         redirectUri: "http://localhost:5173",
         clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
-        clientSecret: sekrecik.client_secret,
+        clientSecret: process.env.SPOTIFY_SECRET_KEY,
     });
 
     spotifyApi
@@ -38,7 +38,7 @@ app.post("/refresh", (req, res) => {
     const refreshToken = req.body.refreshToken;
     const spotifyApi = new SpotifyWebApi({
         clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
-        clientSecret: sekrecik.client_secret,
+        clientSecret: process.env.SPOTIFY_SECRET_KEY,
         refreshToken: refreshToken,
     });
 
@@ -56,4 +56,4 @@ app.post("/refresh", (req, res) => {
         });
 });
 
-app.listen(2115);
+app.listen(process.env.PORT);
