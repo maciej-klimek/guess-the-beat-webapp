@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -63,7 +64,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     }
   };
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-gray1 p-4 relative">
+    <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
+      <div className="absolute top-6 right-4">
+        <Link to="/" className="text-white bg-gray2 p-2 rounded">
+          Home
+        </Link>
+      </div>
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
