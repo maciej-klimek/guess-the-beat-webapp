@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import TrackGuesser from "./TrackGuesser";
 
 interface GuessByListeningProps {
     accessToken: string;
@@ -17,6 +18,7 @@ interface Track {
 const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
     const [topTracks, setTopTracks] = useState<Track[]>([]);
     const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+    const [newTrackChosen, setNewTrackChosen] = useState(false);
 
     useEffect(() => {
         const fetchTopTracks = async () => {
@@ -26,10 +28,11 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                     params: {
-                        limit: 16,
+                        limit: 50,
                     },
                 });
                 setTopTracks(response.data.items);
+                chooseRandomTrack(response.data.items);
             } catch (error) {
                 console.error("Error fetching top tracks:", error);
             }
@@ -38,37 +41,39 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
         fetchTopTracks();
     }, [accessToken]);
 
-    const playTrack = (track: Track) => {
-        setSelectedTrack(track);
+    const chooseRandomTrack = (tracks: Track[]) => {
+        const randomIndex = Math.floor(Math.random() * tracks.length);
+        setSelectedTrack(tracks[randomIndex]);
+        setNewTrackChosen(true);
+        setTimeout(() => {
+            setNewTrackChosen(false);
+        }, 1000);
+    };
+
+    const handleNextTrack = () => {
+        chooseRandomTrack(topTracks);
     };
 
     return (
         <div className="min-h-screen flex flex-col justify-between items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
             <div className="absolute top-6 right-4">
-                <Link to="/" className="text-white bg-gray2 p-2 rounded">
+                <Link to="/" className="text-white bg-gray2 p-2 rounded hover:bg-gray-800">
                     Home
                 </Link>
             </div>
-            <h2 className="text-5xl mt-4">Guess By Listening</h2>
-            <div className="w-full max-w-4xl flex-grow grid grid-cols-4 gap-4 justify-items-center mt-8">
-                {topTracks.map((track, index) => (
-                    <div key={index} className="p-4 border rounded-xl cursor-pointer flex flex-col items-center w-52">
-                        <img src={track.album.images[0].url} alt={track.name} className="w-16 h-16 mx-auto mb-2" />
-                        <h4 className="text-xl text-white text-center">{track.name}</h4>
-                        <p className="text-md text-gray-700 text-center">
-                            {track.artists.map((artist) => artist.name).join(", ")}
-                        </p>
-                        <button onClick={() => playTrack(track)} className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md">Play</button>
-                    </div>
-                ))}
-            </div>
-            {selectedTrack && (
-                <div className="mb-4">
-                    <h3 className="text-lg mb-2">Now Playing: {selectedTrack.name}</h3>
-                    <audio controls src={selectedTrack.preview_url} className="w-full max-w-md mx-auto" />
+            <h2 className="text-4xl md:text-5xl mt-8 mb-4">Guess By Listening</h2>
+            {newTrackChosen && (
+                <div className="text-sm text-gray3 mt-4 absolute left-1/2 top-3/4 transform -translate-x-1/2">
+                    New track chosen!
                 </div>
             )}
-            <div className="text-sm break-words w-full text-stone-800 mt-4">
+            {selectedTrack && (
+                <TrackGuesser
+                    track={selectedTrack}
+                    onNextTrack={handleNextTrack}
+                />
+            )}
+            <div className="text-sm break-words w-full text-gray-700 mt-4 text-center">
                 Access Token: {accessToken}
             </div>
         </div>

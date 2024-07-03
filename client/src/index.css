@@ -112,13 +112,21 @@
 }
 
 .bg-gray1 {
-    background-color: #121212;
+  background-color: #121212;
 }
 
 .bg-gray2 {
-    background-color: #1F1F1F;
+  background-color: #1F1F1F;
 }
 
 .bg-gray3 {
-    background-color: #2a2a2a;
+  background-color: #2a2a2a;
+}
+
+.text-gray2 {
+  color: #1F1F1F;
+}
+
+.text-gray3 {
+  color: #2a2a2a;
 }
