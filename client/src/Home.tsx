@@ -26,13 +26,13 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                     },
                 });
                 setUserData(response.data);
-                console.log("User data" + response.data.display_name);
+
                 await axios.post("http://localhost:2115/store-user-data", {
                     User_ID: response.data.id,
                     displayName: response.data.display_name,
                   });
             } catch (error) {
-                console.error("Error fetching user data:", error);
+                console.error("Error fetching user data: ", error);
             }
         };
 
@@ -41,7 +41,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
         }
     }, [accessToken]);
 
-    console.log(userData?.display_name);
+    console.log("Currently Logged User: ", userData?.display_name);
 
     return (
         <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
