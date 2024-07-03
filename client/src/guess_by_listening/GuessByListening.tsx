@@ -61,7 +61,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
                     Home
                 </Link>
             </div>
-            <h2 className="text-4xl md:text-5xl mt-8 mb-4">Guess By Listening</h2>
+            <h2 className="text-4xl md:text-5xl mt-8 mb-4">Guess By Listening 🎧</h2>
             {newTrackChosen && (
                 <div className="text-sm text-gray3 mt-4 absolute left-1/2 top-3/4 transform -translate-x-1/2">
                     New track chosen!

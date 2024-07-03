@@ -85,17 +85,17 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
                     value={userGuess}
                     onChange={(e) => setUserGuess(e.target.value)}
                     className="mt-4 mb-4 px-4 py-2 rounded-md w-11/12 bg-gray3 text-center text-neutral-300 placeholder-neutral-600"
-                    placeholder="What the title of this song?"
+                    placeholder="What the title of this song? 🤔"
                 />
                 <div className="text-center">
                     <p className="text-sm text-neutral-600">Remaining Chances: {remainingChances}</p>
                 </div>
                 <div className="flex justify-center mt-8 mb-4">
                     <button onClick={handleGuess} className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 mr-2">
-                        Submit Guess
+                        Submit Guess 😎
                     </button>
                     <button onClick={handleNextTrack} className="px-4 py-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 ml-2">
-                        Different Track
+                        Different Track 🎵
                     </button>
                 </div>
             </div>
@@ -105,11 +105,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
                         {
                             isCorrectGuess ? (
                                 <h3 className="text-2xl mb-4">
-                                    Correct! 🎉
+                                    Correct! 🎉🔥
                                 </h3>
                             ) : (
                                 <h3 className="text-2xl mb-4 text-red-500">
-                                    Out of Chances! 😞
+                                    Out of Chances! 😩
                                 </h3>
                             )
                         }
