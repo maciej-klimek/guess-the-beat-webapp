@@ -1,4 +1,15 @@
 //zeby odpalic: npm run devStart
+require('dotenv').config()
+
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION // or your preferred region
+});
+
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 require('dotenv').config()
 
@@ -32,6 +43,33 @@ app.post("/login", (req, res) => {
             console.log(err);
             res.sendStatus(400);
         });
+});
+
+app.post("/store-user-data", (req, res) => {
+    const { User_ID, displayName } = req.body;
+    console.log("User body", req.body);
+    console.log("User_ID: ", User_ID);
+    const params = {
+        TableName: 'Users',
+        Key: { User_ID: User_ID, Score: 0 },
+        UpdateExpression: 'set displayName = :d',
+        ExpressionAttributeValues: {
+            ':d': displayName,
+        },
+        ReturnValues: 'UPDATED_NEW',
+    };
+
+    dynamoDB.update(params, (err, result) => {
+        if (err) {
+            console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+            res.sendStatus(500);
+        } else {
+            res.json({
+                message: 'User data updated successfully',
+                data: result.Attributes,
+            });
+        }
+    });
 });
 
 app.post("/refresh", (req, res) => {
