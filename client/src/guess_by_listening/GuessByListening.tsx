@@ -14,7 +14,7 @@ interface Track {
     preview_url: string;
 }
 
-const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
+const GuessByListening: React.FC<GuessByListeningProps> = () => {
     const location = useLocation();
     const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
     const [newTrackChosen, setNewTrackChosen] = useState(false);
@@ -39,13 +39,13 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-between items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
+        <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
             <div className="absolute top-6 right-4">
                 <Link to="/" className="text-white bg-gray2 p-2 rounded hover:bg-gray-800">
                     Home
                 </Link>
             </div>
-            <h2 className="text-4xl md:text-5xl mt-8 mb-4">
+            <h2 className="text-4xl md:text-5xl mt-8 mb-20">
                 Guess By Listening 🎧 <br />
                 {playlistName && <span className="text-sm text-gray-700">from {playlistName}</span>}
             </h2>
@@ -60,9 +60,6 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
                     onNextTrack={handleNextTrack}
                 />
             )}
-            <div className="text-sm break-words w-full text-gray-700 mt-4 text-center">
-                Access Token: {accessToken}
-            </div>
         </div>
     );
 };
