@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TrackGuesser from "./TrackGuesser";
 
 interface GuessByListeningProps {
@@ -16,30 +15,15 @@ interface Track {
 }
 
 const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
-    const [topTracks, setTopTracks] = useState<Track[]>([]);
+    const location = useLocation();
     const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
     const [newTrackChosen, setNewTrackChosen] = useState(false);
+    const tracks: Track[] = location.state?.tracks || [];
+    const playlistName: string | undefined = location.state?.playlistName;
 
     useEffect(() => {
-        const fetchTopTracks = async () => {
-            try {
-                const response = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    params: {
-                        limit: 50,
-                    },
-                });
-                setTopTracks(response.data.items);
-                chooseRandomTrack(response.data.items);
-            } catch (error) {
-                console.error("Error fetching top tracks:", error);
-            }
-        };
-
-        fetchTopTracks();
-    }, [accessToken]);
+        chooseRandomTrack(tracks);
+    }, [tracks]);
 
     const chooseRandomTrack = (tracks: Track[]) => {
         const randomIndex = Math.floor(Math.random() * tracks.length);
@@ -51,7 +35,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
     };
 
     const handleNextTrack = () => {
-        chooseRandomTrack(topTracks);
+        chooseRandomTrack(tracks);
     };
 
     return (
@@ -61,7 +45,10 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
                     Home
                 </Link>
             </div>
-            <h2 className="text-4xl md:text-5xl mt-8 mb-4">Guess By Listening 🎧</h2>
+            <h2 className="text-4xl md:text-5xl mt-8 mb-4">
+                Guess By Listening 🎧 <br />
+                {playlistName && <span className="text-sm text-gray-700">from {playlistName}</span>}
+            </h2>
             {newTrackChosen && (
                 <div className="text-sm text-gray3 mt-4 absolute left-1/2 top-3/4 transform -translate-x-1/2">
                     New track chosen!
