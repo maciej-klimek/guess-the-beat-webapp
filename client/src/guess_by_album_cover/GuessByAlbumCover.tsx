@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import AlbumCover from "./AlbumCover";
+import GuessInput from "./GuessInput";
+import Hearts from "./Hearts";
+import useFetchAlbumsName from "./useFetchAlbumsName";
+import useFetchLikedAlbums from "./useFetchLikedAlbums";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -29,55 +33,24 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [heartsCount, setHeartsCount] = useState(5);
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
+  const [pointCounter, setPointCounter] = useState(100);
+
+  useFetchAlbumsName(inputValue, accessToken, setAlbumSuggestions);
+
+  useFetchLikedAlbums(accessToken, setLikedAlbums);
 
   useEffect(() => {
-    const fetchAlbumsName = async () => {
-      if (!inputValue) {
-        setAlbumSuggestions([]);
-        return;
-      }
-      try {
-        const response = await axios.get(
-          `https://api.spotify.com/v1/search?q=${inputValue}&type=album`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        const albums = response.data.albums.items.map((album: any) => ({
-          album: {
-            id: album.id,
-            name: album.name,
-            imageUrl: album.images[2]?.url,
-          },
-        }));
-        setAlbumSuggestions(albums);
-      } catch (error) {
-        console.error("Error fetching search:", error);
-      }
+    const resetGame = () => {
+      setVisiblePanels([]);
+      setInputValue("");
+      setGuessedAlbum(null);
+      setEmptyHeartsCount(0);
+      setHeartsCount(5);
+      setPointCounter(100);
     };
-    fetchAlbumsName();
-  }, [inputValue, accessToken]);
 
-  useEffect(() => {
-    const fetchAlbum = async () => {
-      try {
-        const response = await axios.get(
-          "https://api.spotify.com/v1/me/albums",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setLikedAlbums(response.data.items);
-      } catch (error) {
-        console.error("Error fetching album cover:", error);
-      }
-    };
-    fetchAlbum();
-  }, [accessToken]);
+    resetGame();
+  }, []);
 
   const removeBlur = () => {
     const availableIndexes = Array.from(
@@ -92,13 +65,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setEmptyHeartsCount(emptyHeartsCount + 1);
       setPickedAlbum(0);
       setHeartsCount(heartsCount - 1);
+      setPointCounter(pointCounter - 20);
       if (emptyHeartsCount === 4) {
         removeAllBlur();
-        setEmptyHeartsCount(0);
-        setHeartsCount(5);
         setPickedAlbum(0);
         setInputValue("");
-        alert("Niestety przegrałeś, spróbuj ponownie :)");
+        setPointCounter(pointCounter - 20);
+        alert("Niestety przegrałeś, spróbuj ponownie");
       }
     }
   };
@@ -132,7 +105,10 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const handleGuess = () => {
     setGuessedAlbum(likedAlbums[getRandomInt(0, likedAlbums.length - 1)]);
-    setVisiblePanels([]); // Reset blur on guess
+    setVisiblePanels([]);
+    setPointCounter(100);
+    setEmptyHeartsCount(0);
+    setHeartsCount(5);
   };
 
   return (
@@ -147,85 +123,36 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       </h2>
       <button
         onClick={handleGuess}
-        className="mt-10 px-3 py-1 bg-green-500 text-white rounded-md"
+        className="mt-10 px-20 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
       >
         ZGADUJ!
       </button>
-      <div className="relative flex items-center mt-10">
-        {guessedAlbum?.album.images[0].url ? (
-          <img
-            className="mx-auto p-2 w-80 h-80"
-            src={guessedAlbum?.album.images[0].url}
-            alt="Album Cover"
-          />
-        ) : (
-          <img
-            className="mx-auto p-2 w-80 h-80"
-            src="album_placeholder.jpg"
-            alt="Album Cover"
-          />
-        )}
-        <div className="absolute grid grid-cols-3 grid-rows-3 w-80 h-80">
-          {Array.from({ length: 9 }, (_, index) => (
-            <div
-              key={index}
-              className={`w-full h-full ${
-                visiblePanels.includes(index)
-                  ? "bg-transparent"
-                  : "backdrop-filter backdrop-blur-md"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="flex mt-6 relative">
-        <input
-          className="p-2 rounded-lg"
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          list="albumSuggestions"
-          placeholder="Wpisz nazwę albumu..."
-        />
-        {inputValue.length > 0 && pickedAlbum === 0 && (
-          <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-64 overflow-y-auto">
-            {albumSuggestions.map((album) => (
-              <li
-                key={album.album.id}
-                onClick={() => handleAlbumSelection(album)}
-                className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-              >
-                <img
-                  src={album.album.imageUrl}
-                  alt="Album Cover"
-                  className="h-10 w-10 mr-2"
-                />
-                <span>{album.album.name}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <button
-          onClick={handleChange}
-          className="p-2 bg-blue-500 hover:bg-slate-600 text-white rounded-lg ml-4"
-        >
-          Submit
-        </button>
-      </div>
-      <div className="mt-4 flex">
-        {Array.from({ length: emptyHeartsCount }, (_, index) => (
-          <FaRegHeart key={index} className="text-red-600 mr-1" />
-        ))}
-        {Array.from({ length: heartsCount }, (_, index) => (
-          <FaHeart key={index} className="text-red-600 mr-1" />
-        ))}
-      </div>
-      <div className="text-sm break-words w-full text-stone-800 mt-4">
-        Access Token: {accessToken}
-      </div>
       {guessedAlbum && (
-        <div className="text-sm break-words w-full text-stone-800 mt-4">
+        <div className="mt-2 text-2xl text-green-500">
+          Points: {pointCounter}
+        </div>
+      )}
+      {guessedAlbum && (
+        <AlbumCover
+          imageUrl={guessedAlbum.album.images[0].url}
+          visiblePanels={visiblePanels}
+        />
+      )}
+      {guessedAlbum && (
+        <GuessInput
+          inputValue={inputValue}
+          onInputChange={(e) => setInputValue(e.target.value)}
+          onSubmit={handleChange}
+          albumSuggestions={albumSuggestions}
+          onSelectAlbum={handleAlbumSelection}
+          pickedAlbum={pickedAlbum}
+        />
+      )}
+      {guessedAlbum && (
+        <Hearts emptyHeartsCount={emptyHeartsCount} heartsCount={heartsCount} />
+      )}
+      {guessedAlbum && (
+        <div className="text-sm break-words w-full text-gray-800 mt-4">
           Album Title: {guessedAlbum.album.name}
         </div>
       )}
