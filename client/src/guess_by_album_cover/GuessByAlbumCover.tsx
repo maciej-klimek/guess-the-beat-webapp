@@ -29,6 +29,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [heartsCount, setHeartsCount] = useState(5);
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
+  const [pointCounter, setPointCounter] = useState(100);
 
   useEffect(() => {
     const fetchAlbumsName = async () => {
@@ -92,13 +93,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setEmptyHeartsCount(emptyHeartsCount + 1);
       setPickedAlbum(0);
       setHeartsCount(heartsCount - 1);
+      setPointCounter(pointCounter - 20);
       if (emptyHeartsCount === 4) {
         removeAllBlur();
-        setEmptyHeartsCount(0);
-        setHeartsCount(5);
         setPickedAlbum(0);
         setInputValue("");
-        alert("Niestety przegrałeś, spróbuj ponownie :)");
+        setPointCounter(pointCounter - 20);
+        alert("Niestety przegrałeś, spróbój ponownie");
       }
     }
   };
@@ -132,7 +133,10 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const handleGuess = () => {
     setGuessedAlbum(likedAlbums[getRandomInt(0, likedAlbums.length - 1)]);
-    setVisiblePanels([]); // Reset blur on guess
+    setVisiblePanels([]);
+    setPointCounter(100);
+    setEmptyHeartsCount(0);
+    setHeartsCount(5);
   };
 
   return (
@@ -151,6 +155,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       >
         ZGADUJ!
       </button>
+      <div className="mt-2 text-2xl">Points: {pointCounter}</div>
       <div className="relative flex items-center mt-10">
         {guessedAlbum?.album.images[0].url ? (
           <img
