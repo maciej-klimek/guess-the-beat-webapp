@@ -28,11 +28,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [emptyHeartsCount, setEmptyHeartsCount] = useState(0);
   const [heartsCount, setHeartsCount] = useState(5);
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
+  const [pickedAlbum, setPickedAlbum] = useState(0);
 
   useEffect(() => {
     const fetchAlbumsName = async () => {
-      if(!inputValue){
-       setAlbumSuggestions([]);
+      if (!inputValue) {
+        setAlbumSuggestions([]);
         return;
       }
       try {
@@ -44,17 +45,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             },
           }
         );
-        console.log(response.data.albums.items[0].images[2].url);
         const albums = response.data.albums.items.map((album: any) => ({
           album: {
             id: album.id,
             name: album.name,
-            imageUrl: album.images[2]?.url 
+            imageUrl: album.images[2]?.url,
           },
-          
         }));
         setAlbumSuggestions(albums);
-        console.log(albums.name)
       } catch (error) {
         console.error("Error fetching search:", error);
       }
@@ -92,11 +90,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
       setVisiblePanels([...visiblePanels, randomIndex]);
       setEmptyHeartsCount(emptyHeartsCount + 1);
+      setPickedAlbum(0);
       setHeartsCount(heartsCount - 1);
       if (emptyHeartsCount === 4) {
         removeAllBlur();
         setEmptyHeartsCount(0);
         setHeartsCount(5);
+        setPickedAlbum(0);
+        setInputValue("");
         alert("Niestety przegrałeś, spróbuj ponownie :)");
       }
     }
@@ -105,6 +106,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const removeAllBlur = () => {
     const allIndexes = Array.from({ length: 9 }, (_, index) => index);
     setVisiblePanels(allIndexes);
+    setPickedAlbum(0);
+    setInputValue("");
   };
 
   const getRandomInt = (min: number, max: number): number => {
@@ -114,6 +117,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const handleChange = () => {
     if (inputValue.toLowerCase() !== guessedAlbum?.album.name.toLowerCase()) {
       removeBlur();
+      setInputValue("");
     } else {
       removeAllBlur();
       alert("Gratulacje, udało Ci się odgadnąć nazwę!");
@@ -122,9 +126,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
     setInputValue(selectedAlbum.album.name);
+    setPickedAlbum(1);
     setAlbumSuggestions([]);
   };
-  
+
+  const handleGuess = () => {
+    setGuessedAlbum(likedAlbums[getRandomInt(0, likedAlbums.length - 1)]);
+    setVisiblePanels([]); // Reset blur on guess
+  };
+
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
       <div className="absolute top-6 right-4">
@@ -136,11 +146,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         Guess By Album Cover
       </h2>
       <button
-        onClick={() =>
-          setGuessedAlbum(
-            likedAlbums[getRandomInt(0, likedAlbums.length - 1)]
-          )
-        }
+        onClick={handleGuess}
         className="mt-10 px-3 py-1 bg-green-500 text-white rounded-md"
       >
         ZGADUJ!
@@ -172,7 +178,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           ))}
         </div>
       </div>
-      <div className="flex mt-6">
+      <div className="flex mt-6 relative">
         <input
           className="p-2 rounded-lg"
           type="text"
@@ -181,8 +187,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           list="albumSuggestions"
           placeholder="Wpisz nazwę albumu..."
         />
-        {inputValue.length > 0 && (
-          <ul className="absolute bg-white w-300 mt-1 rounded-lg border border-gray-300 shadow-md max-h-40 overflow-y-auto">
+        {inputValue.length > 0 && pickedAlbum === 0 && (
+          <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-64 overflow-y-auto">
             {albumSuggestions.map((album) => (
               <li
                 key={album.album.id}
