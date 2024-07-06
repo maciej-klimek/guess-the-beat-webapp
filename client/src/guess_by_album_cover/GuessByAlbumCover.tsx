@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
-import useFetchAlbumsName from "./useFetchAlbumsName";
-import useFetchLikedAlbums from "./useFetchLikedAlbums";
+import useFetchAlbumsName from "./hooks/useFetchAlbumsName";
+import useFetchLikedAlbums from "./hooks/useFetchLikedAlbums";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
