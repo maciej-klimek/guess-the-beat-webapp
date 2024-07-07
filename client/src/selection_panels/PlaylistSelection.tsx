@@ -196,6 +196,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
                             type="text"
                             value={playlistUrl}
                             onChange={handlePaste}
+                            onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
                             placeholder="Paste Spotify playlist URL"
                             className="px-4 py-2 rounded-md bg-gray3 text-neutral-500 focus:outline-none focus:ring-2 focus:ring-green-500 flex-grow"
                         />
