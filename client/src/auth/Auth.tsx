@@ -16,9 +16,9 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
-  const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
-  const [expiresIn, setExpiresIn] = useState<number | null>(parseInt(localStorage.getItem('expiresIn') || '0'));
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [expiresIn, setExpiresIn] = useState<number | null>(null);
 
   const code = new URLSearchParams(window.location.search).get("code");
 
@@ -30,10 +30,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setAccessToken(res.data.accessToken);
           setRefreshToken(res.data.refreshToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
-
-          localStorage.setItem('accessToken', res.data.accessToken);
-          localStorage.setItem('refreshToken', res.data.refreshToken);
-          localStorage.setItem('expiresIn', (Date.now() + res.data.expiresIn * 1000).toString());
 
           window.history.pushState({}, "", "/");
         })
@@ -47,15 +43,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .then(res => {
           setAccessToken(res.data.accessToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
-
-          localStorage.setItem('accessToken', res.data.accessToken);
-          localStorage.setItem('expiresIn', (Date.now() + res.data.expiresIn * 1000).toString());
         })
         .catch((error) => {
           console.error("Error during token refresh", error);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('expiresIn');
+          setAccessToken(null);
+          setRefreshToken(null);
+          setExpiresIn(null);
           window.location.href = "/";
         });
     }
@@ -65,9 +58,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAccessToken(null);
     setRefreshToken(null);
     setExpiresIn(null);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('expiresIn');
   };
 
   return (
