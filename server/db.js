@@ -1,5 +1,4 @@
 require('dotenv').config();
-import { DynamoDB } from 'aws-sdk';
 
 const AWS = require('aws-sdk');
 const express = require('express');
@@ -11,31 +10,50 @@ AWS.config.update({
     region: process.env.AWS_REGION
 });
 
-const dynamoDB = new DynamoDB.DocumentClient();
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 router.post("/store-user-data", (req, res) => {
-    const { User_ID, displayName } = req.body;
-    console.log("User body", req.body);
-    console.log("User_ID: ", User_ID);
 
-    const getParams = {
-        TableName: 'Users',
-        Key: { User_ID: User_ID },
+    const { User_Id, DisplayName, Score} = req.body;
+
+    // Check if user exists
+    const checkParams = {
+        TableName: 'UsersTable',
+        Key: { User_Id: User_Id}
     };
 
-    dynamoDB.get(getParams, (err, data) => {
+    dynamoDB.get(checkParams, (err, data) => {
         if (err) {
-            console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
             res.sendStatus(500);
+        } else if (Object.keys(data).length === 0) {
+            // User does not exist, add them
+            console.log("User does not exist, adding them.");
+            const addParams = {
+                TableName: 'UsersTable',
+                Item: { User_Id: User_Id, DisplayName: DisplayName, Score: 0 }
+            };
+            dynamoDB.put(addParams, (err, data) => {
+                if (err) {
+                    console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
+                    res.sendStatus(500);
+                } else {
+                    res.json({
+                        message: 'User added successfully',
+                        data: addParams.Item,
+                    });
+                }
+            });
         } else {
-            const currentScore = data.Item ? data.Item.Score : 0;
+            // User exists, update their data
+            console.log("User exists");
             const updateParams = {
-                TableName: 'Users',
-                Key: { User_ID: User_ID },
-                UpdateExpression: 'set displayName = :d, Score = :s',
+                TableName: 'UsersTable',
+                Key: { User_Id: User_Id},
+                UpdateExpression: 'set DisplayName = :d, Score = :s',
                 ExpressionAttributeValues: {
-                    ':d': displayName,
-                    ':s': currentScore + 1,
+                    ':d': DisplayName,
+                    ':s': Score
                 },
                 ReturnValues: 'UPDATED_NEW',
             };
@@ -45,7 +63,6 @@ router.post("/store-user-data", (req, res) => {
                     console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
                     res.sendStatus(500);
                 } else {
-                    console.log("Update succeeded:", result.Attributes);
                     res.json({
                         message: 'User data updated successfully',
                         data: result.Attributes,

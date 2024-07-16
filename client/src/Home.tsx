@@ -17,28 +17,17 @@ interface User {
 const Home: React.FC<HomeProps> = ({ accessToken }) => {
     const [userData, setUserData] = useState<User | null>(null);
     const [score, setScore] = useState<number | null>(null);
+    const [incrementedScore, setIncrementedScore] = useState<number>(0); // State to manage the incremented score
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get("https://api.spotify.com/v1/me", {
+                const spotifyUserResponse = await axios.get("https://api.spotify.com/v1/me", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                setUserData(response.data);
-
-                // Pobranie aktualnego score z bazy danych
-                const scoreResponse = await axios.get(`http://localhost:2115/get-score/${response.data.id}`);
-                setScore(scoreResponse.data.score);
-
-                // Aktualizacja danych użytkownika w bazie danych
-                const updateResponse = await axios.post("http://localhost:2115/store-user-data", {
-                    User_ID: response.data.id,
-                    displayName: response.data.display_name,
-                });
-
-                console.log("Update response: ", updateResponse.data);
+                setUserData(spotifyUserResponse.data);
             } catch (error) {
                 console.error("Error fetching user data: ", error);
             }
@@ -49,7 +38,28 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
         }
     }, [accessToken]);
 
-    console.log("Currently Logged User: ", userData?.display_name);
+    useEffect(() => {
+        const updateScoreOnServer = async () => {
+            try {
+                const databaseServerResponse = await axios.post("http://localhost:2115/store-user-data", {
+                    User_Id: userData?.id,
+                    DisplayName: userData?.display_name,
+                    Score: incrementedScore,
+                });
+                setScore(databaseServerResponse.data.data.Score); // Update score state with the updated score from the server response
+            } catch (error) {
+                console.error("Error updating score on server: ", error);
+            }
+        };
+
+        if (userData && userData.id && incrementedScore !== 0) {
+            updateScoreOnServer();
+        }
+    }, [userData, incrementedScore]);
+
+    const incrementScore = () => {
+        setIncrementedScore(incrementedScore + 1);
+    };
 
     return (
         <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
@@ -74,7 +84,13 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                     {userData && (
                         <div className="mt-20">
                             <h2 className="text-2xl">Welcome, {userData.display_name}</h2>
-                            <p className="text-xl">Your score: {score}</p>
+                            <p className="text-xl">Your score: {score}</p> {/* Display current score */}
+                            <button
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                                onClick={incrementScore}
+                            >
+                                Increment Score
+                            </button>
                         </div>
                     )}
                 </div>
