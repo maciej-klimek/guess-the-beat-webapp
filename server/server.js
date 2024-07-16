@@ -1,97 +1,100 @@
-//zeby odpalic: npm run devStart
-require('dotenv').config()
+require('dotenv').config();
 
 const AWS = require('aws-sdk');
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
+// Konfiguracja AWS
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION // or your preferred region
+    region: process.env.AWS_REGION
 });
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-
-const sekrecik = require("./sekrecik.json");
-
-const express = require('express');
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const SpotifyWebApi = require('spotify-web-api-node');
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/login", (req, res) => {
-    const code = req.body.code;
-    const spotifyApi = new SpotifyWebApi({
-        redirectUri: "http://localhost:5173",
-        clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
-        clientSecret: sekrecik.client_secret,
-    });
+const tableName = 'Users';
+const item = {
+    User_ID: req.body.User_ID,
+    displayName: req.body.displayName,
+    Score: 5,
+}
 
-    spotifyApi
-        .authorizationCodeGrant(code)
-        .then(data => {
-            res.json({
-                accessToken: data.body.access_token,
-                refreshToken: data.body.refresh_token,
-                expiresIn: data.body.expires_in,
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(400);
-        });
-});
+const params = {
+    TableName: tableName,
+    Item: item,
+};
 
-app.post("/store-user-data", (req, res) => {
-    const { User_ID, displayName } = req.body;
+const getParams = {
+    TableName: tableName,
+    Key: { User_ID: req.body.User_ID },
+};
+
+app.post("/store-user-data", async (req, res) => {
+    const { User_ID, item } = req.body;
+
     console.log("User body", req.body);
-    console.log("User_ID: ", User_ID);
-    const params = {
+    console.log("User_ID:", item.User_ID);
+
+    // Pobierz aktualny Score użytkownika
+    const getParams = {
         TableName: 'Users',
-        Key: { User_ID: User_ID, Score: 0 },
-        UpdateExpression: 'set displayName = :d',
-        ExpressionAttributeValues: {
-            ':d': displayName,
-        },
-        ReturnValues: 'UPDATED_NEW',
+        Key: { User_ID: User_ID },
     };
 
-    dynamoDB.update(params, (err, result) => {
+    try {
+        const data = await dynamoDB.get(getParams).promise();
+        const currentScore = data.Item ? data.Item.Score : 0;
+
+        // Zaktualizuj Score i displayName użytkownika
+        const updateParams = {
+            TableName: 'Users',
+            Key: { User_ID: User_ID },
+            UpdateExpression: 'set displayName = :d, Score = :s',
+            ExpressionAttributeValues: {
+                ':d': displayName,
+                ':s': currentScore + 1,
+            },
+            ReturnValues: 'UPDATED_NEW',
+        };
+
+        const result = await dynamoDB.update(updateParams).promise();
+        console.log("Update succeeded:", result.Attributes);
+        res.json({
+            message: 'User data updated successfully',
+            data: result.Attributes,
+        });
+
+    } catch (error) {
+        console.error("Unable to update item. Error JSON:", JSON.stringify(error, null, 2));
+        res.sendStatus(500);
+    }
+});
+
+app.get('/get-item', (req, res) => {
+    const { tableName, key } = req.query;
+
+    const params = {
+        TableName: 'Users',
+        Key: JSON.parse(key),
+    };
+
+    dynamoDB.get(params, (err, data) => {
         if (err) {
-            console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
             res.sendStatus(500);
         } else {
-            res.json({
-                message: 'User data updated successfully',
-                data: result.Attributes,
-            });
+            console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
+            res.json(data);
         }
     });
 });
 
-app.post("/refresh", (req, res) => {
-    const refreshToken = req.body.refreshToken;
-    const spotifyApi = new SpotifyWebApi({
-        clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
-        clientSecret: sekrecik.client_secret,
-        refreshToken: refreshToken,
-    });
-
-    spotifyApi
-        .refreshAccessToken()
-        .then(data => {
-            res.json({
-                accessToken: data.body.access_token,
-                expiresIn: data.body.expires_in,
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(400);
-        });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
-app.listen(2115);
