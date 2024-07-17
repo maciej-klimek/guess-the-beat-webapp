@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const SpotifyWebApi = require('spotify-web-api-node');
 
-console.log("AAAAAAAAAAAAAAAAA")
+console.log(process.env.SPOTIFY_SECRET_KEY)
 
 // Trasa logowania do Spotify
 router.post("/login", (req, res) => {
