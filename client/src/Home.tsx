@@ -16,13 +16,16 @@ interface User {
 const Home: React.FC<HomeProps> = ({ accessToken }) => {
     // console.log(accessToken);    
     const [userData, setUserData] = useState<User | null>(null);
+
     
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get("https://api.spotify.com/v1/me", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
+                        
                     },
                 });
                 setUserData(response.data);
@@ -31,13 +34,16 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                     User_ID: response.data.id,
                     displayName: response.data.display_name,
                   });
+
             } catch (error) {
                 console.error("Error fetching user data: ", error);
+   
             }
         };
 
         if (accessToken){
             fetchUserData();
+
         }
     }, [accessToken]);
 
