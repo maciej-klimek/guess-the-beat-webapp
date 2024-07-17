@@ -1,0 +1,9 @@
+EC2 instancja na aws
+Server ubuntu
+nginx
+ps2
+build reacta -> wszystko deployuje server
+push na brancha 
+pull na server
+odpalic prosces servera przez ps2
+conf nginx zeby serwowal naszą apke
