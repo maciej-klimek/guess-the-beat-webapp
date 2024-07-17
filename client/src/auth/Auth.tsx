@@ -25,7 +25,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (code && !accessToken) {
       axios
-        .post("http://localhost:2115/login", { code })
+        .post("http://13.60.167.48:2115/login", { code })
         .then(res => {
           setAccessToken(res.data.accessToken);
           console.log(res.data.accessToken)
@@ -40,7 +40,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
     } else if (accessToken && refreshToken && Date.now() >= expiresIn!) {
       axios
-        .post("http://localhost:2115/refresh", { refreshToken })
+        .post("http://13.60.167.48:2115/refresh", { refreshToken })
         .then(res => {
           setAccessToken(res.data.accessToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
