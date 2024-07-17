@@ -25,7 +25,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (code && !accessToken) {
       axios
-        .post("http://localhost:2115/login", { code })
+        .post("http://13.60.167.48:2115/login", { code })
         .then(res => {
           setAccessToken(res.data.accessToken);
           console.log(res.data.accessToken)
