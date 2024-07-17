@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
-import useFetchAlbumsName from "./hooks/useFetchAlbumsName";
-import useFetchLikedAlbums from "./hooks/useFetchLikedAlbums";
+import GuessButton from "./GuessButton";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -34,22 +34,73 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
 
-  useFetchAlbumsName(inputValue, accessToken, setAlbumSuggestions);
-
-  useFetchLikedAlbums(accessToken, setLikedAlbums);
+  useEffect(() => {
+    const fetchAlbumsNameToSuggestion = async () => {
+      if (!inputValue) {
+        setAlbumSuggestions([]);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `https://api.spotify.com/v1/search?q=${inputValue}&type=album`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        const albums = response.data.albums.items.map((album: any) => ({
+          album: {
+            id: album.id,
+            name: album.name,
+            imageUrl: album.images[2]?.url,
+          },
+        }));
+        setAlbumSuggestions(albums);
+      } catch (error) {
+        console.error("Error fetching search:", error);
+      }
+    };
+    fetchAlbumsNameToSuggestion();
+  }, [inputValue, accessToken]);
 
   useEffect(() => {
-    const resetGame = () => {
-      setVisiblePanels([]);
-      setInputValue("");
-      setGuessedAlbum(null);
-      setEmptyHeartsCount(0);
-      setHeartsCount(5);
-      setPointCounter(100);
+    const fetchAlbumToPlay = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.spotify.com/v1/me/albums",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setLikedAlbums(response.data.items);
+      } catch (error) {
+        console.error("Error fetching album cover:", error);
+      }
     };
+    fetchAlbumToPlay();
+  }, [accessToken]);
 
+  const handlePlayGame = () => {
     resetGame();
-  }, []);
+    const randomIndex = getRandomInt(0, likedAlbums.length - 1);
+    setGuessedAlbum(likedAlbums[randomIndex]);
+  };
+
+  const getRandomInt = (min: number, max: number): number => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const resetGame = () => {
+    setVisiblePanels([]);
+    setInputValue("");
+    setGuessedAlbum(null);
+    setEmptyHeartsCount(0);
+    setHeartsCount(5);
+    setPointCounter(100);
+  };
 
   const removeBlur = () => {
     const availableIndexes = Array.from(
@@ -82,11 +133,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setInputValue("");
   };
 
-  const getRandomInt = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  const handleAlbumSelection = (selectedAlbum: Album) => {
+    setInputValue(selectedAlbum.album.name);
+    setPickedAlbum(1);
+    setAlbumSuggestions([]);
   };
 
-  const handleChange = () => {
+  const handleCheckAnswear = () => {
     if (inputValue.toLowerCase() !== guessedAlbum?.album.name.toLowerCase()) {
       removeBlur();
       setInputValue("");
@@ -94,20 +147,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       removeAllBlur();
       alert("Gratulacje, udało Ci się odgadnąć nazwę!");
     }
-  };
-
-  const handleAlbumSelection = (selectedAlbum: Album) => {
-    setInputValue(selectedAlbum.album.name);
-    setPickedAlbum(1);
-    setAlbumSuggestions([]);
-  };
-
-  const handleGuess = () => {
-    setGuessedAlbum(likedAlbums[getRandomInt(0, likedAlbums.length - 1)]);
-    setVisiblePanels([]);
-    setPointCounter(100);
-    setEmptyHeartsCount(0);
-    setHeartsCount(5);
   };
 
   return (
@@ -120,12 +159,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      <button
-        onClick={handleGuess}
-        className="mt-10 px-20 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
-      >
-        ZGADUJ!
-      </button>
+      <GuessButton onStartGame={handlePlayGame} />
       {guessedAlbum && (
         <div className="mt-2 text-2xl text-green-500">
           Points: {pointCounter}
@@ -141,7 +175,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         <GuessInput
           inputValue={inputValue}
           onInputChange={(e) => setInputValue(e.target.value)}
-          onSubmit={handleChange}
+          onSubmit={handleCheckAnswear}
           albumSuggestions={albumSuggestions}
           onSelectAlbum={handleAlbumSelection}
           pickedAlbum={pickedAlbum}

@@ -1,4 +1,5 @@
 import React from "react";
+import SubmitButton from "./SubmitButton";
 
 interface GuessInputProps {
   inputValue: string;
@@ -25,7 +26,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
         value={inputValue}
         onChange={onInputChange}
         list="albumSuggestions"
-        placeholder="Wpisz nazwę albumu..."
+        placeholder="Type an album name..."
       />
       {inputValue.length > 0 && pickedAlbum === 0 && (
         <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-64 overflow-y-auto">
@@ -45,12 +46,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
           ))}
         </ul>
       )}
-      <button
-        onClick={onSubmit}
-        className="p-2 bg-blue-500 hover:bg-slate-600 text-white rounded-lg ml-4"
-      >
-        Submit
-      </button>
+      <SubmitButton onSubmit={onSubmit} />
     </div>
   );
 };
