@@ -1,16 +1,18 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const router = express.Router();
 const SpotifyWebApi = require('spotify-web-api-node');
 
-console.log(process.env.SPOTIFY_SECRET_KEY)
+// Enable CORS
+router.use(cors());
 
 // Trasa logowania do Spotify
 router.post("/login", (req, res) => {
     const code = req.body.code;
     const spotifyApi = new SpotifyWebApi({
-        redirectUri: "http://localhost:2115",
+        redirectUri: "http://13.60.167.48:2115",
         clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
         clientSecret: process.env.SPOTIFY_SECRET_KEY,
     });
