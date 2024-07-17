@@ -4,8 +4,11 @@ import axios from "axios";
 interface Album {
   album: {
     id: string;
+    images: { url: string }[];
+    release_date: string;
     name: string;
-    imageUrl?: string;
+    artists: { name: string }[];
+    genres: string[];
   };
 }
 
@@ -30,6 +33,7 @@ const useFetchAlbumsName = (
           }
         );
         const albums: Album[] = response.data.albums.items.map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (album: any) => ({
             album: {
               id: album.id,

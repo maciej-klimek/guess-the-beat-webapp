@@ -70,6 +70,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
                 },
             });
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const tracks = playlistId === "top" ? response.data.items : response.data.tracks.items.map((item: any) => item.track);
             const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
 
@@ -129,24 +130,24 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setError("");
-        try {
-            const playlistId = extractPlaylistIdFromUrl(playlistUrl);
-            if (playlistId) {
-                const playlistApiUrl = `https://api.spotify.com/v1/playlists/${playlistId}`;
-                await fetchTracks(playlistId, playlistApiUrl);
-            } else {
-                setError("Invalid Spotify playlist URL.");
-                setSubmittedPlaylist(null);
-            }
-        } catch (error) {
-            console.error("Error processing playlist URL:", error);
-            setError("Error processing playlist URL. Please try again.");
-            setSubmittedPlaylist(null);
-        }
-    };
+    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     setError("");
+    //     try {
+    //         const playlistId = extractPlaylistIdFromUrl(playlistUrl);
+    //         if (playlistId) {
+    //             const playlistApiUrl = `https://api.spotify.com/v1/playlists/${playlistId}`;
+    //             await fetchTracks(playlistId, playlistApiUrl);
+    //         } else {
+    //             setError("Invalid Spotify playlist URL.");
+    //             setSubmittedPlaylist(null);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error processing playlist URL:", error);
+    //         setError("Error processing playlist URL. Please try again.");
+    //         setSubmittedPlaylist(null);
+    //     }
+    // };
 
     const extractPlaylistIdFromUrl = (url: string): string | null => {
         const regex = /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\??.*$/;

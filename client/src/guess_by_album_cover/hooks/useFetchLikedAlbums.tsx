@@ -4,11 +4,13 @@ import axios from "axios";
 interface Album {
   album: {
     id: string;
-    name: string;
     images: { url: string }[];
+    release_date: string;
+    name: string;
+    artists: { name: string }[];
+    genres: string[];
   };
 }
-
 const useFetchLikedAlbums = (
   accessToken: string,
   setLikedAlbums: React.Dispatch<React.SetStateAction<Album[]>>
@@ -24,6 +26,7 @@ const useFetchLikedAlbums = (
             },
           }
         );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const likedAlbums: Album[] = response.data.items.map((item: any) => ({
           album: {
             id: item.album.id,

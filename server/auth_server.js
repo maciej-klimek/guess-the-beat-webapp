@@ -8,7 +8,7 @@ const SpotifyWebApi = require('spotify-web-api-node');
 router.post("/login", (req, res) => {
     const code = req.body.code;
     const spotifyApi = new SpotifyWebApi({
-        redirectUri: "http://localhost:5173",
+        redirectUri: "http://localhost:2115",
         clientId: "463204cdb0ad4f2384e3e037fa48f4d8",
         clientSecret: process.env.SPOTIFY_SECRET_KEY,
     });
