@@ -110,9 +110,6 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                     )}
                 </div>
             </div>
-            <div className="text-sm break-words w-full text-gray-600 mt-4">
-                AccessToken: {accessToken}
-            </div>
         </div>
     );
 };
