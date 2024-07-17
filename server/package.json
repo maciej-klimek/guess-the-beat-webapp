@@ -1,11 +1,11 @@
 {
-  "name": "server",
+  "name": "app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "devStart": "nodemon server.js",
-    "start": "node server.js"
+    "devStart": "nodemon app.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",

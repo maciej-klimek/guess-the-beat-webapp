@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const AWS = require('aws-sdk');
 const express = require('express');
 const router = express.Router();
@@ -12,14 +11,38 @@ AWS.config.update({
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-router.post("/store-user-data", (req, res) => {
+// Endpoint to fetch user score
+router.post("/get-user-score", (req, res) => {
+    const { User_Id } = req.body;
 
-    const { User_Id, DisplayName, Score} = req.body;
+    const params = {
+        TableName: 'UsersTable',
+        Key: { User_Id: User_Id }
+    };
+
+    dynamoDB.get(params, (err, data) => {
+        if (err) {
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
+            res.sendStatus(500);
+        } else if (Object.keys(data).length === 0) {
+            res.status(404).json({ message: 'User not found' });
+        } else {
+            res.json({
+                message: 'User score fetched successfully',
+                data: data.Item,
+            });
+        }
+    });
+});
+
+// Endpoint to store user data
+router.post("/store-user-data", (req, res) => {
+    const { User_Id, DisplayName, Score } = req.body;
 
     // Check if user exists
     const checkParams = {
         TableName: 'UsersTable',
-        Key: { User_Id: User_Id}
+        Key: { User_Id: User_Id }
     };
 
     dynamoDB.get(checkParams, (err, data) => {
@@ -49,7 +72,7 @@ router.post("/store-user-data", (req, res) => {
             console.log("User exists");
             const updateParams = {
                 TableName: 'UsersTable',
-                Key: { User_Id: User_Id},
+                Key: { User_Id: User_Id },
                 UpdateExpression: 'set DisplayName = :d, Score = :s',
                 ExpressionAttributeValues: {
                     ':d': DisplayName,
