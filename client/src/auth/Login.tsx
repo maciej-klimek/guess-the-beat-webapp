@@ -1,5 +1,5 @@
 const AUTH_URL =
-  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:2115&scope=user-top-read%20user-library-read%20user-read-private";
+  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://13.60.167.48:2115&scope=user-top-read%20user-library-read%20user-read-private";
 
 const Login = () => {
   return (
