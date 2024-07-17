@@ -44,7 +44,7 @@ const SongTimer: React.FC<SongTimerProps> = ({ playbackDuration, isPlaying }) =>
     return (
         <div className="m-auto mr-6 w-full bg-neutral-900 rounded h-10 overflow-hidden">
             <div
-                className="bg-green-500 h-full"
+                className="bg-red-500 h-full"
                 style={{ width: `${progressBarWidth}%` }}
             />
         </div>

@@ -18,12 +18,16 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
     const [userData, setUserData] = useState<User | null>(null);
     const [score, setScore] = useState<number | null>(null);
 
+
+    
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const spotifyUserResponse = await axios.get("https://api.spotify.com/v1/me", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
+                        
                     },
                 });
                 const user = spotifyUserResponse.data;
@@ -45,6 +49,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
             fetchUserData();
         }
     }, [accessToken]);
+
 
     useEffect(() => {
         const updateScoreOnServer = async () => {
