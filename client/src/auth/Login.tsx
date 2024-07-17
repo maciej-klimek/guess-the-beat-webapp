@@ -1,5 +1,5 @@
-// const AUTH_URL =
-//  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:2115&scope=user-top-read%20user-library-read%20user-read-private";
+const AUTH_URL =
+  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:2115&scope=user-top-read%20user-library-read%20user-read-private";
 
 const Login = () => {
   return (
@@ -16,7 +16,7 @@ const Login = () => {
           Please log in to continue
         </p>
         <a
-          href={"https://www.youtube.com/?themeRefresh=1#!you"}
+          href={AUTH_URL}
           className="block bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-center poppins-semibold"
         >
           Login with Spotify
