@@ -16,7 +16,7 @@ const Login = () => {
           Please log in to continue
         </p>
         <a
-          href={AUTH_URL}
+          href={"https://www.youtube.com/?themeRefresh=1#!you"}
           className="block bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-center poppins-semibold"
         >
           Login with Spotify
