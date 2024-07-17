@@ -11,47 +11,74 @@ interface HomeProps {
 
 interface User {
     display_name: string;
+    id: string;
 }
 
 const Home: React.FC<HomeProps> = ({ accessToken }) => {
-    // console.log(accessToken);    
     const [userData, setUserData] = useState<User | null>(null);
+    const [score, setScore] = useState<number | null>(null);
+
 
     
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get("https://api.spotify.com/v1/me", {
+                const spotifyUserResponse = await axios.get("https://api.spotify.com/v1/me", {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         
                     },
                 });
-                setUserData(response.data);
+                const user = spotifyUserResponse.data;
+                setUserData(user);
 
-                await axios.post("http://localhost:2115/store-user-data", {
-                    User_ID: response.data.id,
-                    displayName: response.data.display_name,
-                  });
+                // Fetch current score from your database
+                const databaseServerResponse = await axios.post("http://localhost:2115/get-user-score", {
+                    User_Id: user.id,
+                });
 
+                // Update score state with the fetched score
+                setScore(databaseServerResponse.data.data.Score);
             } catch (error) {
-                console.error("Error fetching user data: ", error);
-   
+                console.error("Error fetching user data or score: ", error);
             }
         };
 
-        if (accessToken){
+        if (accessToken) {
             fetchUserData();
-
         }
     }, [accessToken]);
 
-    console.log("Currently Logged User: ", userData?.display_name);
+
+    useEffect(() => {
+        const updateScoreOnServer = async () => {
+            try {
+                const databaseServerResponse = await axios.post("http://localhost:2115/store-user-data", {
+                    User_Id: userData?.id,
+                    DisplayName: userData?.display_name,
+                    Score: score,
+                });
+                console.log("Score updated on server:", databaseServerResponse.data);
+            } catch (error) {
+                console.error("Error updating score on server: ", error);
+            }
+        };
+
+        if (userData && userData.id && score !== null) {
+            updateScoreOnServer();
+        }
+    }, [userData, score]);
+
+    const incrementScore = () => {
+        if (score !== null) {
+            setScore(score + 1);
+        }
+    };
 
     return (
         <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
-            <Settings/>
+            <Settings />
             <div className="flex-grow flex items-center justify-center">
                 <div>
                     <h1 className="text-5xl">Guess the beat!</h1>
@@ -69,9 +96,21 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                             </div>
                         </div>
                     </div>
+                    {userData && score !== null && (
+                        <div className="mt-20">
+                            <h2 className="text-2xl">Welcome, {userData.display_name}</h2>
+                            <p className="text-xl">Your score: {score}</p> {/* Display current score */}
+                            <button
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                                onClick={incrementScore}
+                            >
+                                Increment Score
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-            <div className="text-sm break-words w-full text-stone-800 mt-4">
+            <div className="text-sm break-words w-full text-gray-600 mt-4">
                 AccessToken: {accessToken}
             </div>
         </div>

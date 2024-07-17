@@ -1,17 +1,17 @@
 {
-  "name": "server",
+  "name": "app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "devStart": "nodemon server.js",
-    "start": "node server.js"
+    "devStart": "nodemon app.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1653.0",
+    "aws-sdk": "^2.1659.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
