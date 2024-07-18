@@ -5,20 +5,19 @@ import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
 import GuessButton from "./GuessButton";
+import ResultModal from "./ResultModal";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
 }
 
 interface Album {
-  album: {
-    id: string;
-    images: { url: string }[];
-    release_date: string;
-    name: string;
-    artists: { name: string }[];
-    genres: string[];
-  };
+  id: string;
+  images: { url: string }[];
+  release_date: string;
+  name: string;
+  artists: { name: string }[];
+  genres: string[];
 }
 
 const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
@@ -33,6 +32,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrectGuess, setIsCorrectGuess] = useState(false);
 
   useEffect(() => {
     const fetchAlbumsNameToSuggestion = async () => {
@@ -50,15 +51,17 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           }
         );
         const albums = response.data.albums.items.map((album: any) => ({
-          album: {
-            id: album.id,
-            name: album.name,
-            imageUrl: album.images[2]?.url,
-          },
+          id: album.id,
+          images: album.images,
+          release_date: album.release_date,
+          name: album.name,
+          artists: album.artists,
+          genres: album.genres,
         }));
         setAlbumSuggestions(albums);
       } catch (error) {
         console.error("Error fetching search:", error);
+        setAlbumSuggestions([]);
       }
     };
     fetchAlbumsNameToSuggestion();
@@ -75,9 +78,19 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             },
           }
         );
-        setLikedAlbums(response.data.items);
+        setLikedAlbums(
+          response.data.items.map((item: any) => ({
+            id: item.album.id,
+            images: item.album.images,
+            release_date: item.album.release_date,
+            name: item.album.name,
+            artists: item.album.artists,
+            genres: item.album.genres,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching album cover:", error);
+        setLikedAlbums([]);
       }
     };
     fetchAlbumToPlay();
@@ -85,8 +98,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const handlePlayGame = () => {
     resetGame();
-    const randomIndex = getRandomInt(0, likedAlbums.length - 1);
-    setGuessedAlbum(likedAlbums[randomIndex]);
+    if (likedAlbums.length > 0) {
+      const randomIndex = getRandomInt(0, likedAlbums.length - 1);
+      setGuessedAlbum(likedAlbums[randomIndex]);
+    } else {
+      console.warn("No liked albums found");
+    }
   };
 
   const getRandomInt = (min: number, max: number): number => {
@@ -100,6 +117,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setEmptyHeartsCount(0);
     setHeartsCount(5);
     setPointCounter(100);
+    setShowResult(false);
+    setIsCorrectGuess(false);
   };
 
   const removeBlur = () => {
@@ -121,7 +140,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         setPickedAlbum(0);
         setInputValue("");
         setPointCounter(pointCounter - 20);
-        alert("Niestety przegrałeś, spróbuj ponownie");
+        setIsCorrectGuess(false);
+        setShowResult(true);
       }
     }
   };
@@ -134,19 +154,26 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
-    setInputValue(selectedAlbum.album.name);
+    console.log("Selected album:", selectedAlbum);
+    setInputValue(selectedAlbum.name);
     setPickedAlbum(1);
     setAlbumSuggestions([]);
   };
 
   const handleCheckAnswear = () => {
-    if (inputValue.toLowerCase() !== guessedAlbum?.album.name.toLowerCase()) {
+    if (inputValue.toLowerCase() !== guessedAlbum?.name.toLowerCase()) {
       removeBlur();
       setInputValue("");
     } else {
       removeAllBlur();
-      alert("Gratulacje, udało Ci się odgadnąć nazwę!");
+      setIsCorrectGuess(true);
+      setShowResult(true);
     }
+  };
+
+  const handleNextTrack = () => {
+    setShowResult(false);
+    handlePlayGame();
   };
 
   return (
@@ -165,9 +192,9 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           Points: {pointCounter}
         </div>
       )}
-      {guessedAlbum && (
+      {guessedAlbum && guessedAlbum.images[0] && (
         <AlbumCover
-          imageUrl={guessedAlbum.album.images[0].url}
+          imageUrl={guessedAlbum.images[0].url}
           visiblePanels={visiblePanels}
         />
       )}
@@ -186,8 +213,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       )}
       {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
-          Album Title: {guessedAlbum.album.name}
+          Album Title: {guessedAlbum.name}
         </div>
+      )}
+      {showResult && guessedAlbum && (
+        <ResultModal
+          isCorrectGuess={isCorrectGuess}
+          track={guessedAlbum}
+          handleNextTrack={handleNextTrack}
+        />
       )}
     </div>
   );
