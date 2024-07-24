@@ -6,6 +6,7 @@ import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
 import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
+import PlaylistSelector from "./PlaylistSelector";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -18,6 +19,11 @@ interface Album {
   name: string;
   artists: { name: string }[];
   genres: string[];
+}
+
+interface Playlist {
+  id: string;
+  name: string;
 }
 
 const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
@@ -34,9 +40,41 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [pointCounter, setPointCounter] = useState(100);
   const [showResult, setShowResult] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAlbumsNameToSuggestion = async () => {
+    if (selectedPlaylistId) {
+      const fetchAlbumToPlay = async () => {
+        try {
+          const response = await axios.get(
+            `https://api.spotify.com/v1/playlists/${selectedPlaylistId}/tracks`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          setLikedAlbums(
+            response.data.items.map((item: any) => ({
+              id: item.track.album.id,
+              images: item.track.album.images,
+              release_date: item.track.album.release_date,
+              name: item.track.album.name,
+              artists: item.track.album.artists,
+              genres: item.track.album.genres,
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching albums from playlist:", error);
+          setLikedAlbums([]);
+        }
+      };
+      fetchAlbumToPlay();
+    }
+  }, [selectedPlaylistId, accessToken]);
+
+  useEffect(() => {
+    const fetchAlbumSuggestions = async () => {
       if (!inputValue) {
         setAlbumSuggestions([]);
         return;
@@ -60,41 +98,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         }));
         setAlbumSuggestions(albums);
       } catch (error) {
-        console.error("Error fetching search:", error);
+        console.error("Error fetching album suggestions:", error);
         setAlbumSuggestions([]);
       }
     };
-    fetchAlbumsNameToSuggestion();
+    fetchAlbumSuggestions();
   }, [inputValue, accessToken]);
-
-  useEffect(() => {
-    const fetchAlbumToPlay = async () => {
-      try {
-        const response = await axios.get(
-          "https://api.spotify.com/v1/me/albums",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setLikedAlbums(
-          response.data.items.map((item: any) => ({
-            id: item.album.id,
-            images: item.album.images,
-            release_date: item.album.release_date,
-            name: item.album.name,
-            artists: item.album.artists,
-            genres: item.album.genres,
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching album cover:", error);
-        setLikedAlbums([]);
-      }
-    };
-    fetchAlbumToPlay();
-  }, [accessToken]);
 
   const handlePlayGame = () => {
     resetGame();
@@ -102,7 +111,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       const randomIndex = getRandomInt(0, likedAlbums.length - 1);
       setGuessedAlbum(likedAlbums[randomIndex]);
     } else {
-      console.warn("No liked albums found");
+      console.warn("No albums found in the selected playlist");
     }
   };
 
@@ -154,7 +163,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
-    console.log("Selected album:", selectedAlbum);
     setInputValue(selectedAlbum.name);
     setPickedAlbum(1);
     setAlbumSuggestions([]);
@@ -186,7 +194,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      <GuessButton onStartGame={handlePlayGame} />
+      {!guessedAlbum && (
+        <PlaylistSelector
+          accessToken={accessToken}
+          onSelectPlaylist={(playlistId) => setSelectedPlaylistId(playlistId)}
+          onPlaylistsLoaded={(fetchedPlaylists) => setPlaylists(fetchedPlaylists)}
+        />
+      )}
+      {!guessedAlbum && (<GuessButton onStartGame={handlePlayGame} />)}
       {guessedAlbum && (
         <div className="mt-2 text-2xl text-green-500">
           Points: {pointCounter}
