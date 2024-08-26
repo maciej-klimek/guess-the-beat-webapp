@@ -24,6 +24,8 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [showResult, setShowResult] = useState(false);
     const [hasPlayed, setHasPlayed] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0); // Key to refresh heights completely
+    const [addSegmentsKey, setAddSegmentsKey] = useState(0); // Key to add new segments
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const handleGuess = () => {
@@ -34,6 +36,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
             setRemainingChances(prev => prev - 1);
             setPlaybackDuration(prev => prev + 2);
             setHasPlayed(false);
+            setAddSegmentsKey(prev => prev + 1); // Trigger adding new segments
             if (remainingChances - 1 === 0) {
                 setShowResult(true);
             }
@@ -47,6 +50,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
         setRemainingChances(5);
         setPlaybackDuration(2);
         setHasPlayed(false);
+        setRefreshKey(prev => prev + 1); // Trigger full re-render
         onNextTrack();
     };
 
@@ -70,7 +74,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
                 <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
                 <div className="flex justify-center">
                     <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
-                    <SongTimer playbackDuration={playbackDuration} isPlaying={isPlaying} />
+                    <SongTimer playbackDuration={playbackDuration} isPlaying={isPlaying} refreshKey={refreshKey} addSegmentsKey={addSegmentsKey} />
                 </div>
                 <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
                 <ChancesDisplay remainingChances={remainingChances} />
