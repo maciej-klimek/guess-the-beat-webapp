@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
-import useFetchAlbumsName from "./hooks/useFetchAlbumsName";
-import useFetchLikedAlbums from "./hooks/useFetchLikedAlbums";
+import GuessButton from "./GuessButton";
+import ResultModal from "./ResultModal";
+import PlaylistSelector from "./PlaylistSelector";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
 }
 
 interface Album {
-  album: {
-    id: string;
-    images: { url: string }[];
-    release_date: string;
-    name: string;
-    artists: { name: string }[];
-    genres: string[];
-  };
+  id: string;
+  images: { url: string }[];
+  release_date: string;
+  name: string;
+  artists: { name: string }[];
+  genres: string[];
+}
+
+interface Playlist {
+  id: string;
+  name: string;
 }
 
 const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
@@ -33,23 +38,97 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
-
-  useFetchAlbumsName(inputValue, accessToken, setAlbumSuggestions);
-
-  useFetchLikedAlbums(accessToken, setLikedAlbums);
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrectGuess, setIsCorrectGuess] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
   useEffect(() => {
-    const resetGame = () => {
-      setVisiblePanels([]);
-      setInputValue("");
-      setGuessedAlbum(null);
-      setEmptyHeartsCount(0);
-      setHeartsCount(5);
-      setPointCounter(100);
-    };
+    if (selectedPlaylistId) {
+      const fetchAlbumToPlay = async () => {
+        try {
+          const response = await axios.get(
+            `https://api.spotify.com/v1/playlists/${selectedPlaylistId}/tracks`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          setLikedAlbums(
+            response.data.items.map((item: any) => ({
+              id: item.track.album.id,
+              images: item.track.album.images,
+              release_date: item.track.album.release_date,
+              name: item.track.album.name,
+              artists: item.track.album.artists,
+              genres: item.track.album.genres,
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching albums from playlist:", error);
+          setLikedAlbums([]);
+        }
+      };
+      fetchAlbumToPlay();
+    }
+  }, [selectedPlaylistId, accessToken]);
 
+  useEffect(() => {
+    const fetchAlbumSuggestions = async () => {
+      if (!inputValue) {
+        setAlbumSuggestions([]);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `https://api.spotify.com/v1/search?q=${inputValue}&type=album`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        const albums = response.data.albums.items.map((album: any) => ({
+          id: album.id,
+          images: album.images,
+          release_date: album.release_date,
+          name: album.name,
+          artists: album.artists,
+          genres: album.genres,
+        }));
+        setAlbumSuggestions(albums);
+      } catch (error) {
+        console.error("Error fetching album suggestions:", error);
+        setAlbumSuggestions([]);
+      }
+    };
+    fetchAlbumSuggestions();
+  }, [inputValue, accessToken]);
+
+  const handlePlayGame = () => {
     resetGame();
-  }, []);
+    if (likedAlbums.length > 0) {
+      const randomIndex = getRandomInt(0, likedAlbums.length - 1);
+      setGuessedAlbum(likedAlbums[randomIndex]);
+    } else {
+      console.warn("No albums found in the selected playlist");
+    }
+  };
+
+  const getRandomInt = (min: number, max: number): number => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const resetGame = () => {
+    setVisiblePanels([]);
+    setInputValue("");
+    setGuessedAlbum(null);
+    setEmptyHeartsCount(0);
+    setHeartsCount(5);
+    setPointCounter(100);
+    setShowResult(false);
+    setIsCorrectGuess(false);
+  };
 
   const removeBlur = () => {
     const availableIndexes = Array.from(
@@ -70,7 +149,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         setPickedAlbum(0);
         setInputValue("");
         setPointCounter(pointCounter - 20);
-        alert("Niestety przegrałeś, spróbuj ponownie");
+        setIsCorrectGuess(false);
+        setShowResult(true);
       }
     }
   };
@@ -82,32 +162,26 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setInputValue("");
   };
 
-  const getRandomInt = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const handleChange = () => {
-    if (inputValue.toLowerCase() !== guessedAlbum?.album.name.toLowerCase()) {
-      removeBlur();
-      setInputValue("");
-    } else {
-      removeAllBlur();
-      alert("Gratulacje, udało Ci się odgadnąć nazwę!");
-    }
-  };
-
   const handleAlbumSelection = (selectedAlbum: Album) => {
-    setInputValue(selectedAlbum.album.name);
+    setInputValue(selectedAlbum.name);
     setPickedAlbum(1);
     setAlbumSuggestions([]);
   };
 
-  const handleGuess = () => {
-    setGuessedAlbum(likedAlbums[getRandomInt(0, likedAlbums.length - 1)]);
-    setVisiblePanels([]);
-    setPointCounter(100);
-    setEmptyHeartsCount(0);
-    setHeartsCount(5);
+  const handleCheckAnswear = () => {
+    if (inputValue.toLowerCase() !== guessedAlbum?.name.toLowerCase()) {
+      removeBlur();
+      setInputValue("");
+    } else {
+      removeAllBlur();
+      setIsCorrectGuess(true);
+      setShowResult(true);
+    }
+  };
+
+  const handleNextTrack = () => {
+    setShowResult(false);
+    handlePlayGame();
   };
 
   return (
@@ -120,20 +194,22 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      <button
-        onClick={handleGuess}
-        className="mt-10 px-20 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
-      >
-        ZGADUJ!
-      </button>
+      {!guessedAlbum && (
+        <PlaylistSelector
+          accessToken={accessToken}
+          onSelectPlaylist={(playlistId) => setSelectedPlaylistId(playlistId)}
+          onPlaylistsLoaded={(fetchedPlaylists) => setPlaylists(fetchedPlaylists)}
+        />
+      )}
+      {!guessedAlbum && (<GuessButton onStartGame={handlePlayGame} />)}
       {guessedAlbum && (
         <div className="mt-2 text-2xl text-green-500">
           Points: {pointCounter}
         </div>
       )}
-      {guessedAlbum && (
+      {guessedAlbum && guessedAlbum.images[0] && (
         <AlbumCover
-          imageUrl={guessedAlbum.album.images[0].url}
+          imageUrl={guessedAlbum.images[0].url}
           visiblePanels={visiblePanels}
         />
       )}
@@ -141,7 +217,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         <GuessInput
           inputValue={inputValue}
           onInputChange={(e) => setInputValue(e.target.value)}
-          onSubmit={handleChange}
+          onSubmit={handleCheckAnswear}
           albumSuggestions={albumSuggestions}
           onSelectAlbum={handleAlbumSelection}
           pickedAlbum={pickedAlbum}
@@ -152,8 +228,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       )}
       {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
-          Album Title: {guessedAlbum.album.name}
+          Album Title: {guessedAlbum.name}
         </div>
+      )}
+      {showResult && guessedAlbum && (
+        <ResultModal
+          isCorrectGuess={isCorrectGuess}
+          track={guessedAlbum}
+          handleNextTrack={handleNextTrack}
+        />
       )}
     </div>
   );
