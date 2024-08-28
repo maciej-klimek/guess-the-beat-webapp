@@ -1,5 +1,8 @@
-const AUTH_URL =
-  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:5173&scope=user-top-read%20user-library-read%20user-read-private";
+const BASE_AUTH_URL = "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:5173";
+
+const SCOPES = ["user-top-read", "user-library-read", "user-read-private"];
+
+const AUTH_URL = `${BASE_AUTH_URL}&scope=${SCOPES.join("%20")}`;
 
 const Login = () => {
   return (
