@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
 import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
-import PlaylistSelector from "./PlaylistSelector";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -21,17 +20,13 @@ interface Album {
   genres: string[];
 }
 
-interface Playlist {
-  id: string;
-  name: string;
-}
 
-const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
-  accessToken,
-}) => {
+const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
+
+  const location = useLocation();
+  const albums: Album[] = location.state?.tracks || [];
   const [visiblePanels, setVisiblePanels] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [likedAlbums, setLikedAlbums] = useState<Album[]>([]);
   const [guessedAlbum, setGuessedAlbum] = useState<Album | null>(null);
   const [emptyHeartsCount, setEmptyHeartsCount] = useState(0);
   const [heartsCount, setHeartsCount] = useState(5);
@@ -40,38 +35,9 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [pointCounter, setPointCounter] = useState(100);
   const [showResult, setShowResult] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (selectedPlaylistId) {
-      const fetchAlbumToPlay = async () => {
-        try {
-          const response = await axios.get(
-            `https://api.spotify.com/v1/playlists/${selectedPlaylistId}/tracks`,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-          setLikedAlbums(
-            response.data.items.map((item: any) => ({
-              id: item.track.album.id,
-              images: item.track.album.images,
-              release_date: item.track.album.release_date,
-              name: item.track.album.name,
-              artists: item.track.album.artists,
-              genres: item.track.album.genres,
-            }))
-          );
-        } catch (error) {
-          console.error("Error fetching albums from playlist:", error);
-          setLikedAlbums([]);
-        }
-      };
-      fetchAlbumToPlay();
-    }
-  }, [selectedPlaylistId, accessToken]);
+  console.log(albums)
+
 
   useEffect(() => {
     const fetchAlbumSuggestions = async () => {
@@ -107,9 +73,9 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const handlePlayGame = () => {
     resetGame();
-    if (likedAlbums.length > 0) {
-      const randomIndex = getRandomInt(0, likedAlbums.length - 1);
-      setGuessedAlbum(likedAlbums[randomIndex]);
+    if (albums.length > 0) {
+      const randomIndex = getRandomInt(0, albums.length - 1);
+      setGuessedAlbum(albums[randomIndex]);
     } else {
       console.warn("No albums found in the selected playlist");
     }
@@ -194,13 +160,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      {!guessedAlbum && (
-        <PlaylistSelector
-          accessToken={accessToken}
-          onSelectPlaylist={(playlistId) => setSelectedPlaylistId(playlistId)}
-          onPlaylistsLoaded={(fetchedPlaylists) => setPlaylists(fetchedPlaylists)}
-        />
-      )}
       {!guessedAlbum && (<GuessButton onStartGame={handlePlayGame} />)}
       {guessedAlbum && (
         <div className="mt-2 text-2xl text-green-500">
@@ -226,11 +185,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       {guessedAlbum && (
         <Hearts emptyHeartsCount={emptyHeartsCount} heartsCount={heartsCount} />
       )}
-      {guessedAlbum && (
+      {/* {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
           Album Title: {guessedAlbum.name}
         </div>
-      )}
+      )} */}
       {showResult && guessedAlbum && (
         <ResultModal
           isCorrectGuess={isCorrectGuess}
