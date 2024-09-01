@@ -34,6 +34,28 @@ router.post("/get-user-score", (req, res) => {
         }
     });
 });
+// Endpoint to fetch user score
+router.get("/get-ranking", (req, res) => {
+    const params = {
+        TableName: 'UsersTable',
+        ProjectionExpression: 'User_Id, DisplayName, Score',
+        Limit: 10,
+        ScanIndexForward: false,
+        IndexName: 'ScoreIndex'
+    };
+
+    dynamoDB.scan(params, (err, data) => {
+        if (err) {
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
+            res.sendStatus(500);
+        } else {
+            res.json({
+                message: 'Ranking fetched successfully',
+                data: data.Items,
+            });
+        }
+    });
+});
 
 // Endpoint to store user data
 router.post("/store-user-data", (req, res) => {
