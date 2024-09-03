@@ -20,9 +20,9 @@ interface Album {
   genres: string[];
 }
 
-
-const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
-
+const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
+  accessToken,
+}) => {
   const location = useLocation();
   const albums: Album[] = location.state?.tracks || [];
   const [visiblePanels, setVisiblePanels] = useState<number[]>([]);
@@ -36,8 +36,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
   const [showResult, setShowResult] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
 
-  console.log(albums)
-
+  //console.log(albums);
 
   useEffect(() => {
     const fetchAlbumSuggestions = async () => {
@@ -74,15 +73,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
   const handlePlayGame = () => {
     resetGame();
     if (albums.length > 0) {
-        const randomIndex = getRandomInt(0, albums.length - 1);
-        const selectedAlbum = albums[randomIndex];
-        setGuessedAlbum(selectedAlbum);
-        albums.splice(randomIndex, 1);
+      const randomIndex = getRandomInt(0, albums.length);
+      const selectedAlbum = albums[randomIndex];
+      setGuessedAlbum(selectedAlbum);
+      albums.splice(randomIndex, 1);
     } else {
-        console.warn("No albums found in the selected playlist");
+      console.warn("No albums found in the selected playlist");
     }
-};
-
+  };
 
   const getRandomInt = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -133,7 +131,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
     setInputValue(selectedAlbum.name);
-    setPickedAlbum(1);
+    setPickedAlbum(0);
     setAlbumSuggestions([]);
   };
 
@@ -163,7 +161,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
-      {!guessedAlbum && (<GuessButton onStartGame={handlePlayGame} />)}
+      {!guessedAlbum && <GuessButton onStartGame={handlePlayGame} />}
       {guessedAlbum && (
         <div className="mt-2 text-2xl text-green-500">
           Points: {pointCounter}
