@@ -74,12 +74,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({accessToken}) => {
   const handlePlayGame = () => {
     resetGame();
     if (albums.length > 0) {
-      const randomIndex = getRandomInt(0, albums.length - 1);
-      setGuessedAlbum(albums[randomIndex]);
+        const randomIndex = getRandomInt(0, albums.length - 1);
+        const selectedAlbum = albums[randomIndex];
+        setGuessedAlbum(selectedAlbum);
+        albums.splice(randomIndex, 1);
     } else {
-      console.warn("No albums found in the selected playlist");
+        console.warn("No albums found in the selected playlist");
     }
-  };
+};
+
 
   const getRandomInt = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;

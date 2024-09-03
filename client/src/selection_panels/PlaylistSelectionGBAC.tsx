@@ -74,7 +74,9 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
                     limit: 50,
                 },
             });
-
+    
+            const uniqueAlbums: { [key: string]: any } = {}; // Obiekt do przechowywania unikalnych albumów
+    
             const albums = playlistId === "top"
                 ? response.data.items.map((item: any) => ({
                     id: item.album.id,
@@ -92,10 +94,20 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
                     artists: item.track.album.artists,
                     genres: item.track.album.genres,
                 }));
-
+    
+            // Dodaj unikalne albumy do obiektu
+            albums.forEach((album) => {
+                if (!uniqueAlbums[album.id]) {
+                    uniqueAlbums[album.id] = album; // Dodaj album do obiektu, jeśli nie istnieje
+                }
+            });
+    
+            // Przekształć obiekt unikalnych albumów z powrotem na tablicę
+            const uniqueAlbumsArray = Object.values(uniqueAlbums);
+    
             const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
-
-            navigate(`/guess-by-album-cover/${playlistId}`, { state: { tracks: albums, playlistName } });
+    
+            navigate(`/guess-by-album-cover/${playlistId}`, { state: { tracks: uniqueAlbumsArray, playlistName } });
         } catch (error) {
             console.error("Error fetching tracks:", error);
             setError("Error fetching tracks. Please check the URL and try again.");
@@ -103,6 +115,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
             setLoading(false);
         }
     };
+    
 
 
     return (
