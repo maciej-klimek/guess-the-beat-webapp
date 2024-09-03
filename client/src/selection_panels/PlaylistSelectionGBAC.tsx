@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaArrowRight } from 'react-icons/fa';
 
 interface Playlist {
     id: string;
@@ -107,9 +108,11 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
-            <div className="absolute top-6 right-4">
-                <Link to="/" className="text-white bg-gray2 p-2 rounded hover:bg-gray-800">
-                    Home
+            <div className="absolute top-8 right-8">
+                <Link
+                    to="/"
+                    className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800">
+                    <FaArrowRight className="text-xl" />
                 </Link>
             </div>
             <h2 className="text-4xl md:text-5xl mt-8">Select a playlist</h2>

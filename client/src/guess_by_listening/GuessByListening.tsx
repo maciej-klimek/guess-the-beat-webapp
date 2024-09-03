@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import TrackGuesser from "./TrackGuesser";
+import { FaArrowRight } from 'react-icons/fa';
 
 interface GuessByListeningProps {
     accessToken: string;
@@ -40,9 +41,12 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
-            <div className="absolute top-6 right-4">
-                <Link to="/" className="text-white bg-gray2 p-2 rounded hover:bg-gray-800">
-                    Home
+            <div className="absolute top-8 right-8">
+                <Link
+                    to="/"
+                    className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+                >
+                    <FaArrowRight className="text-xl" /> {/* Adjust icon size as needed */}
                 </Link>
             </div>
             <h2 className="text-4xl md:text-5xl mt-8 mb-20">
