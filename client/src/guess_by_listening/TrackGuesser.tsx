@@ -85,7 +85,8 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
         <SuggestedSongList
             inputValue={userGuess}
             onSongSelect={handleSongSelect}
-        />        <ChancesDisplay remainingChances={remainingChances} />
+        />
+        <ChancesDisplay remainingChances={remainingChances} />
         <div className="flex justify-center mt-8 mb-4">
           <button
             onClick={handleGuess}

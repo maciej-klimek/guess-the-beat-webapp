@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "./auth/Auth";
 import Home from "./Home";
 import YourTopSongs from "./misc/YourTopSongs";
 import Logout from "./auth/Logout";
+import Ranking from "./misc/Ranking";
 import PlaylistSelectionGBL from "./selection_panels/PlaylistSelectionGBL";
 import PlaylistSelectionGBAC from "./selection_panels/PlaylistSelectionGBAC";
 
@@ -42,6 +43,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/guess-by-album-cover/:playlistId" element={<GuessByAlbumCover accessToken={accessToken} />} />
       
       <Route path="/your-top-songs" element={<YourTopSongs accessToken={accessToken} />} />
+      <Route path="/ranking" element={<Ranking accessToken={accessToken}/>} />
       <Route path="/logout" element={<Logout />} />
     </Routes>
   );
