@@ -34,7 +34,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                 setUserData(user);
                 
                 // Fetch current score from your database
-                const databaseServerResponseScore = await axios.post("http://localhost:2115/get-user-score", {
+                const databaseServerResponseScore = await axios.post("http://localhost:2115/get-user-data", {
                     User_Id: user.id,
                 });
 
