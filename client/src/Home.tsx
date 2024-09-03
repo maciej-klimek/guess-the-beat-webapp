@@ -32,14 +32,14 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                 });
                 const user = spotifyUserResponse.data;
                 setUserData(user);
-
+                
                 // Fetch current score from your database
-                const databaseServerResponse = await axios.post("http://localhost:2115/get-user-score", {
+                const databaseServerResponseScore = await axios.post("http://localhost:2115/get-user-score", {
                     User_Id: user.id,
                 });
 
                 // Update score state with the fetched score
-                setScore(databaseServerResponse.data.data.Score);
+                setScore(databaseServerResponseScore.data.data.Score);
             } catch (error) {
                 console.error("Error fetching user data or score: ", error);
             }
