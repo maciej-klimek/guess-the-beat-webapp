@@ -13,7 +13,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Endpoint to fetch user score
 router.post("/get-user-score", (req, res) => {
-    const { User_Id } = req.body;
+    const { User_Id, DisplayName } = req.body;
 
     const params = {
         TableName: 'UsersTable',
