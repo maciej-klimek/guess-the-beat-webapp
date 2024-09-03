@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ByListeningPanel from "./selection_panels/ByListeningPanel";
 import ByAlbumCoverPanel from "./selection_panels/ByAlbumCoverPanel";
 import Settings from "./Settings";
@@ -18,7 +18,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
     const [userData, setUserData] = useState<User | null>(null);
     const [score, setScore] = useState<number | null>(null);
 
-
+    const navigate = useNavigate();
     
 
     useEffect(() => {
@@ -32,14 +32,14 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                 });
                 const user = spotifyUserResponse.data;
                 setUserData(user);
-
+                
                 // Fetch current score from your database
-                const databaseServerResponse = await axios.post("http://localhost:2115/get-user-score", {
+                const databaseServerResponseScore = await axios.post("http://localhost:2115/get-user-data", {
                     User_Id: user.id,
                 });
 
                 // Update score state with the fetched score
-                setScore(databaseServerResponse.data.data.Score);
+                setScore(databaseServerResponseScore.data.data.Score);
             } catch (error) {
                 console.error("Error fetching user data or score: ", error);
             }
@@ -76,6 +76,10 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
         }
     };
 
+    const goToRanking = () => {
+        navigate("/ranking");
+    };
+
     return (
         <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
             <Settings />
@@ -105,6 +109,12 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                                 onClick={incrementScore}
                             >
                                 Increment Score
+                            </button>
+                            <button
+                                className="mt-4 px-4 py-2 bg-green-500 text-white rounded ml-4"
+                                onClick={goToRanking}
+                            >
+                                View Ranking
                             </button>
                         </div>
                     )}
