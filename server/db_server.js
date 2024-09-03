@@ -13,14 +13,15 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Endpoint to fetch user score
 router.post("/get-user-score", (req, res) => {
-    const { User_Id, DisplayName } = req.body;
+    const { User_Id, DisplayName, Score } = req.body;
 
-    const params = {
+    // Check if user exists
+    const checkParams = {
         TableName: 'UsersTable',
         Key: { User_Id: User_Id }
     };
 
-    dynamoDB.get(params, (err, data) => {
+    dynamoDB.get(checkParams, (err, data) => {
         if (err) {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
             res.sendStatus(500);
