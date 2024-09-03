@@ -13,7 +13,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Endpoint to fetch user score
 router.post("/get-user-score", (req, res) => {
-    const { User_Id, DisplayName, Score } = req.body;
+    const { User_Id } = req.body;
 
     // Check if user exists
     const checkParams = {
@@ -30,7 +30,7 @@ router.post("/get-user-score", (req, res) => {
             console.log("User does not exist, adding them.");
             const addParams = {
                 TableName: 'UsersTable',
-                Item: { User_Id: User_Id, DisplayName: DisplayName, Score: 0 }
+                Item: { User_Id: User_Id}
             };
             dynamoDB.put(addParams, (err, data) => {
                 if (err) {
