@@ -1,5 +1,5 @@
 ## WAŻNE ##
-# zanim uruchomicie skrypt trzeba sobie w powershellu wklepać tą komende, bo windows domyślnie blokuje skrypty w psh (XDDDD):
+# zanim uruchomicie skrypt trzeba sobie w powershellu wklepać tą komende, bo windows domyślnie blokuje skrypty w pwsh (XDDDD):
 # Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 

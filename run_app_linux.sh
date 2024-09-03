@@ -1,3 +1,5 @@
+## WAŻNE ## 
+# przed uruchomieniem trzeba wykonać: chmod +x run_app_linux.sh
 #!/bin/bash
 
 # Navigate to the client directory and run npm run dev
