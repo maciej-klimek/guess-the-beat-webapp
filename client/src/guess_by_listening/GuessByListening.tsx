@@ -15,7 +15,7 @@ interface Track {
     preview_url: string;
 }
 
-const GuessByListening: React.FC<GuessByListeningProps> = () => {
+const GuessByListening: React.FC<GuessByListeningProps> = (accessToken) => {
     const location = useLocation();
     const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
     const [newTrackChosen, setNewTrackChosen] = useState(false);

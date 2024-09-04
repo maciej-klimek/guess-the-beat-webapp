@@ -10,7 +10,7 @@ def run_script_based_on_os():
         print("System operacyjny: Windows")
         # Uruchom skrypt PowerShell
         try:
-            subprocess.run(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./run_scripts/run_app_windows.ps1"], check=True)
+            subprocess.run(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./scripts/run_app_windows.ps1"], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Błąd podczas uruchamiania skryptu PowerShell: {e}")
             sys.exit(1)
@@ -19,7 +19,7 @@ def run_script_based_on_os():
         print(f"System operacyjny: {os_type}")
         # Uruchom skrypt Bash
         try:
-            subprocess.run(["bash", "./run_scripts/run_app_linux.sh"], check=True)
+            subprocess.run(["bash", "./scripts/run_app_linux.sh"], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Błąd podczas uruchamiania skryptu Bash: {e}")
             sys.exit(1)

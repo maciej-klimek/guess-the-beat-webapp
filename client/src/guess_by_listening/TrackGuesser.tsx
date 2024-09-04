@@ -1,10 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PlaybackBar from "./PlaybackBar";
 import ResultModal from "./ResultModal";
 import PlayButton from "./PlayButton";
 import UserInput from "./UserInput";
 import ChancesDisplay from "./DisplayChances";
 import SuggestedSongList from "./SuggestedSongList";
+import UserDataManager from "../UserDataManager";
+import { useAuth } from "../auth/Auth";
+
 
 interface TrackGuesserProps {
   track: {
@@ -15,6 +18,7 @@ interface TrackGuesserProps {
     preview_url: string;
   };
   onNextTrack: () => void;
+  accessToken: string | null;
 }
 
 const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
@@ -27,12 +31,36 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
   const [hasPlayed, setHasPlayed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [addSegmentsKey, setAddSegmentsKey] = useState(0);
+  const [user, setUser] = useState<any>(null); // State to store user data
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleGuess = () => {
+
+  const { accessToken } = useAuth()
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (accessToken) {
+        const userData = await UserDataManager.fetchUserData(accessToken);
+        setUser(userData);
+      }
+    };
+
+    fetchUserData();
+  }, [accessToken]);
+
+  const handleGuess = async () => {
     if (userGuess.toLowerCase() === track.name.toLowerCase()) {
       setIsCorrectGuess(true);
       setShowResult(true);
+
+      
+      if (user) {
+        const newScore = (user.score ?? 0) + 100;
+        //console.log("Trying to update score")
+        await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
+        //console.log("Recevied confirmation")
+        setUser({ ...user, score: newScore }); // Update local user state
+        //console.log("Updated Score")
+      }
     } else {
       setRemainingChances((prev) => prev - 1);
       setPlaybackDuration((prev) => prev + 2);
@@ -82,22 +110,13 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
           <PlaybackBar playbackDuration={playbackDuration} isPlaying={isPlaying} refreshKey={refreshKey} addSegmentsKey={addSegmentsKey} />
         </div>
         <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
-        <SuggestedSongList
-            inputValue={userGuess}
-            onSongSelect={handleSongSelect}
-        />
+        <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />
         <ChancesDisplay remainingChances={remainingChances} />
         <div className="flex justify-center mt-8 mb-4">
-          <button
-            onClick={handleGuess}
-            className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 mr-2"
-          >
+          <button onClick={handleGuess} className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 mr-2">
             Submit Guess 😎
           </button>
-          <button
-            onClick={handleNextTrack}
-            className="px-4 py-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 ml-2"
-          >
+          <button onClick={handleNextTrack} className="px-4 py-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 ml-2">
             Different Track 🎵
           </button>
         </div>

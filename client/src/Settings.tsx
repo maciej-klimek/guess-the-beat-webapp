@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 interface SettingsProps {
-    userImage: string | null; // Add a prop to accept user image
+    userImage: string | null;
 }
 
 const Settings: React.FC<SettingsProps> = ({ userImage }) => {
