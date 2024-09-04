@@ -21,7 +21,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
   console.log("Album suggestions:", albumSuggestions); // Debugging log
 
   return (
-    <div className="flex mt-2 relative">
+    <div className="flex mt-4 relative">
       <input
         className="p-2 rounded-lg"
         type="text"

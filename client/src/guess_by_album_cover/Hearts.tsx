@@ -8,7 +8,7 @@ const Hearts: React.FC<ChancesDisplayProps> = ({ emptyHeartsCount }) => {
   const squares = Array.from({ length: 5 }).map((_, index) => (
     <div
       key={index}
-      className={`w-4 h-4 mx-1 mt-4 ${
+      className={`p-4 mx-2 mt-4 ${
         index < emptyHeartsCount ? "bg-red-500" : "bg-gray3"
       } rounded`}
     />
