@@ -26,11 +26,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 }) => {
   const location = useLocation();
   const albums: Album[] = location.state?.tracks || [];
+  const playlistName: string | undefined = location.state?.playlistName;
   const [visiblePanels, setVisiblePanels] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [guessedAlbum, setGuessedAlbum] = useState<Album | null>(null);
   const [emptyHeartsCount, setEmptyHeartsCount] = useState(0);
-  const [heartsCount, setHeartsCount] = useState(5);
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
@@ -92,7 +92,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setInputValue("");
     setGuessedAlbum(null);
     setEmptyHeartsCount(0);
-    setHeartsCount(5);
     setPointCounter(100);
     setShowResult(false);
     setIsCorrectGuess(false);
@@ -110,7 +109,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setVisiblePanels([...visiblePanels, randomIndex]);
       setEmptyHeartsCount(emptyHeartsCount + 1);
       setPickedAlbum(0);
-      setHeartsCount(heartsCount - 1);
       setPointCounter(pointCounter - 20);
       if (emptyHeartsCount === 4) {
         removeAllBlur();
@@ -161,46 +159,51 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         >
             <FaArrowLeft className="text-xl" />
         </Link>
-    </div>
-      <h2 className="text-5xl text-center text-green-500">
-        Guess By Album Cover
+      </div>
+      <h2 className="text-4xl md:text-5xl mt-8">
+        Guess By Album Cover 💽 <br />
+        {playlistName && (
+          <span className="text-lg text-gray-700">from {playlistName}</span>
+        )}
       </h2>
       {!guessedAlbum && <GuessButton onStartGame={handlePlayGame} />}
       {guessedAlbum && (
-        <div className="mt-2 text-2xl text-green-500">
+        <div className="mt-4 text-2xl text-green-500">
           Points: {pointCounter}
         </div>
       )}
-      {guessedAlbum && guessedAlbum.images[0] && (
-        <AlbumCover
-          imageUrl={guessedAlbum.images[0].url}
-          visiblePanels={visiblePanels}
-        />
-      )}
       {guessedAlbum && (
-        <GuessInput
-          inputValue={inputValue}
-          onInputChange={(e) => setInputValue(e.target.value)}
-          onSubmit={handleCheckAnswear}
-          albumSuggestions={albumSuggestions}
-          onSelectAlbum={handleAlbumSelection}
-          pickedAlbum={pickedAlbum}
-        />
-      )}
-      {guessedAlbum && (
-        <Hearts emptyHeartsCount={emptyHeartsCount} heartsCount={heartsCount} />
-      )}
-      {/* {guessedAlbum && (
+        <div className="gap-8 mt-4 max-w-4xl bg-gray2 p-12 rounded-2xl">
+          {guessedAlbum && guessedAlbum.images[0] && (
+            <AlbumCover
+              imageUrl={guessedAlbum.images[0].url}
+              visiblePanels={visiblePanels}
+            />
+          )}
+          {guessedAlbum && <Hearts emptyHeartsCount={emptyHeartsCount} />}
+          {guessedAlbum && (
+            <GuessInput
+              inputValue={inputValue}
+              onInputChange={(e) => setInputValue(e.target.value)}
+              onSubmit={handleCheckAnswear}
+              albumSuggestions={albumSuggestions}
+              onSelectAlbum={handleAlbumSelection}
+              pickedAlbum={pickedAlbum}
+            />
+          )}
+          {/* {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
           Album Title: {guessedAlbum.name}
         </div>
       )} */}
-      {showResult && guessedAlbum && (
-        <ResultModal
-          isCorrectGuess={isCorrectGuess}
-          track={guessedAlbum}
-          handleNextTrack={handleNextTrack}
-        />
+          {showResult && guessedAlbum && (
+            <ResultModal
+              isCorrectGuess={isCorrectGuess}
+              track={guessedAlbum}
+              handleNextTrack={handleNextTrack}
+            />
+          )}
+        </div>
       )}
     </div>
   );

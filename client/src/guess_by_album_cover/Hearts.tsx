@@ -1,22 +1,20 @@
 import React from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 
-interface HeartsProps {
+interface ChancesDisplayProps {
   emptyHeartsCount: number;
-  heartsCount: number;
 }
 
-const Hearts: React.FC<HeartsProps> = ({ emptyHeartsCount, heartsCount }) => {
-  return (
-    <div className="mt-4 flex">
-      {Array.from({ length: emptyHeartsCount }, (_, index) => (
-        <FaRegHeart key={index} className="text-red-600 mr-1" />
-      ))}
-      {Array.from({ length: heartsCount }, (_, index) => (
-        <FaHeart key={index} className="text-red-600 mr-1" />
-      ))}
-    </div>
-  );
+const Hearts: React.FC<ChancesDisplayProps> = ({ emptyHeartsCount }) => {
+  const squares = Array.from({ length: 5 }).map((_, index) => (
+    <div
+      key={index}
+      className={`p-4 mx-2 mt-4 ${
+        index < emptyHeartsCount ? "bg-red-500" : "bg-gray3"
+      } rounded`}
+    />
+  ));
+
+  return <div className="flex justify-center mb-2">{squares}</div>;
 };
 
 export default Hearts;

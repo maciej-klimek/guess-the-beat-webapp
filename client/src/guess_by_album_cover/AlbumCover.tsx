@@ -7,7 +7,7 @@ interface AlbumCoverProps {
 
 const AlbumCover: React.FC<AlbumCoverProps> = ({ imageUrl, visiblePanels }) => {
   return (
-    <div className="relative flex items-center mt-10">
+    <div className="relative flex items-center">
       <img className="mx-auto p-2 w-80 h-80" src={imageUrl} alt="Album Cover" />
       <div className="absolute grid grid-cols-3 grid-rows-3 w-80 h-80">
         {Array.from({ length: 9 }, (_, index) => (
