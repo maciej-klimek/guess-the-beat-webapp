@@ -29,7 +29,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [inputValue, setInputValue] = useState("");
   const [guessedAlbum, setGuessedAlbum] = useState<Album | null>(null);
   const [emptyHeartsCount, setEmptyHeartsCount] = useState(0);
-  const [heartsCount, setHeartsCount] = useState(5);
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
@@ -91,7 +90,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setInputValue("");
     setGuessedAlbum(null);
     setEmptyHeartsCount(0);
-    setHeartsCount(5);
     setPointCounter(100);
     setShowResult(false);
     setIsCorrectGuess(false);
@@ -109,7 +107,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setVisiblePanels([...visiblePanels, randomIndex]);
       setEmptyHeartsCount(emptyHeartsCount + 1);
       setPickedAlbum(0);
-      setHeartsCount(heartsCount - 1);
       setPointCounter(pointCounter - 20);
       if (emptyHeartsCount === 4) {
         removeAllBlur();
@@ -167,37 +164,37 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           Points: {pointCounter}
         </div>
       )}
-      {guessedAlbum && guessedAlbum.images[0] && (
-        <AlbumCover
-          imageUrl={guessedAlbum.images[0].url}
-          visiblePanels={visiblePanels}
-        />
-      )}
-      {guessedAlbum && (
-        <GuessInput
-          inputValue={inputValue}
-          onInputChange={(e) => setInputValue(e.target.value)}
-          onSubmit={handleCheckAnswear}
-          albumSuggestions={albumSuggestions}
-          onSelectAlbum={handleAlbumSelection}
-          pickedAlbum={pickedAlbum}
-        />
-      )}
-      {guessedAlbum && (
-        <Hearts emptyHeartsCount={emptyHeartsCount} heartsCount={heartsCount} />
-      )}
-      {/* {guessedAlbum && (
+      <div className="gap-8 mt-12 max-w-4xl bg-gray2 p-8 rounded-2xl">
+        {guessedAlbum && guessedAlbum.images[0] && (
+          <AlbumCover
+            imageUrl={guessedAlbum.images[0].url}
+            visiblePanels={visiblePanels}
+          />
+        )}
+        {guessedAlbum && <Hearts emptyHeartsCount={emptyHeartsCount} />}
+        {guessedAlbum && (
+          <GuessInput
+            inputValue={inputValue}
+            onInputChange={(e) => setInputValue(e.target.value)}
+            onSubmit={handleCheckAnswear}
+            albumSuggestions={albumSuggestions}
+            onSelectAlbum={handleAlbumSelection}
+            pickedAlbum={pickedAlbum}
+          />
+        )}
+        {/* {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
           Album Title: {guessedAlbum.name}
         </div>
       )} */}
-      {showResult && guessedAlbum && (
-        <ResultModal
-          isCorrectGuess={isCorrectGuess}
-          track={guessedAlbum}
-          handleNextTrack={handleNextTrack}
-        />
-      )}
+        {showResult && guessedAlbum && (
+          <ResultModal
+            isCorrectGuess={isCorrectGuess}
+            track={guessedAlbum}
+            handleNextTrack={handleNextTrack}
+          />
+        )}
+      </div>
     </div>
   );
 };

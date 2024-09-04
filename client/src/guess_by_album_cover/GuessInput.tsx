@@ -21,7 +21,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
   console.log("Album suggestions:", albumSuggestions); // Debugging log
 
   return (
-    <div className="flex mt-6 relative">
+    <div className="flex mt-2 relative">
       <input
         className="p-2 rounded-lg"
         type="text"
@@ -31,7 +31,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
         placeholder="Type an album name..."
       />
       {inputValue.length > 0 && pickedAlbum === 0 && (
-        <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-64 overflow-y-auto">
+        <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-48 overflow-y-auto">
           {albumSuggestions.map((album) => (
             <li
               key={album.id}
