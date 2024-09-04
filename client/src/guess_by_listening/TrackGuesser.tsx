@@ -7,7 +7,7 @@ import ChancesDisplay from "./DisplayChances";
 import SuggestedSongList from "./SuggestedSongList";
 import UserDataManager from "../UserDataManager";
 import { useAuth } from "../auth/Auth";
-
+import { FaCheck, FaChevronDown } from "react-icons/fa";
 
 interface TrackGuesserProps {
   track: {
@@ -31,10 +31,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [addSegmentsKey, setAddSegmentsKey] = useState(0);
   const [user, setUser] = useState<any>(null); // State to store user data
+  const [showSuggestions, setShowSuggestions] = useState(false); // State to control suggestion list visibility
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { accessToken } = useAuth();
 
-
-  const { accessToken } = useAuth()
   useEffect(() => {
     const fetchUserData = async () => {
       if (accessToken) {
@@ -42,7 +43,6 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
         setUser(userData);
       }
     };
-
     fetchUserData();
   }, [accessToken]);
 
@@ -50,15 +50,10 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
     if (userGuess.toLowerCase() === track.name.toLowerCase()) {
       setIsCorrectGuess(true);
       setShowResult(true);
-
-      
       if (user) {
         const newScore = (user.score ?? 0) + 100;
-        //console.log("Trying to update score")
         await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
-        //console.log("Recevied confirmation")
         setUser({ ...user, score: newScore }); // Update local user state
-        //console.log("Updated Score")
       }
     } else {
       setRemainingChances((prev) => prev - 1);
@@ -98,6 +93,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
 
   const handleSongSelect = (song: { id: string; name: string }) => {
     setUserGuess(song.name);
+    setShowSuggestions(false); // Hide suggestions after selecting a song
+  };
+
+  const toggleSuggestions = () => {
+    setShowSuggestions((prev) => !prev);
   };
 
   return (
@@ -108,18 +108,34 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
           <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
           <PlaybackBar playbackDuration={playbackDuration} isPlaying={isPlaying} refreshKey={refreshKey} addSegmentsKey={addSegmentsKey} />
         </div>
-        <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
-        <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />
+        
         <ChancesDisplay remainingChances={remainingChances} />
+        
+        {/* User Input Section with Suggestions and Submit Button */}
         <div className="flex justify-center mt-8 mb-4">
-          <button onClick={handleGuess} className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 mr-2">
-            Submit Guess 😎
-          </button>
-          <button onClick={handleNextTrack} className="px-4 py-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 ml-2">
-            Different Track 🎵
-          </button>
+          <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center mt-5">
+              <button
+                onClick={toggleSuggestions}
+                className="flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+              >
+                <FaChevronDown className="text-xl" />
+              </button>
+              <span className="text-red-500 text-xs mt-1">(-50pts)</span>
+            </div>
+            <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
+            <button onClick={handleGuess} className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600">
+              <FaCheck className="text-xl" />
+            </button>
+          </div>
         </div>
+
+        {/* Conditionally render the SuggestedSongList */}
+        {showSuggestions && (
+          <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />
+        )}
       </div>
+
       {showResult && (
         <ResultModal isCorrectGuess={isCorrectGuess} track={track} handleNextTrack={handleNextTrack} />
       )}

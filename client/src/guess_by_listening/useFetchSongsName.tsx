@@ -13,7 +13,6 @@ const useFetchSongsName = (
     accessToken: string | null,
     setSongSuggestions: React.Dispatch<React.SetStateAction<Song[]>>
 ) => {
-    //console.log(accessToken)
     useEffect(() => {
         const fetchSongsName = async () => {
             if (!inputValue) {
@@ -23,7 +22,7 @@ const useFetchSongsName = (
 
             try {
                 const response = await axios.get(
-                    `https://api.spotify.com/v1/search?q=${inputValue}&type=track`,
+                    `https://api.spotify.com/v1/search?q=${inputValue}&type=track&limit=10`, // Added limit=10 here
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
@@ -39,9 +38,6 @@ const useFetchSongsName = (
                         images: track.album.images,
                     },
                 }));
-
-                // Log the fetched songs to the console
-                //console.log("Fetched Songs:", songs);
 
                 setSongSuggestions(songs);
             } catch (error) {

@@ -3,49 +3,45 @@ import useFetchSongsName from "./useFetchSongsName";
 import { useAuth } from "../auth/Auth";
 
 interface SuggestedSongListProps {
-    inputValue: string;
-    onSongSelect: (song: { id: string; name: string }) => void;
+  inputValue: string;
+  onSongSelect: (song: { id: string; name: string }) => void;
 }
 
 const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSongSelect }) => {
-    const [songSuggestions, setSongSuggestions] = useState<{ id: string; name: string; artists: { name: string }[] }[]>([]);
-    const [showSuggestions, setShowSuggestions] = useState(false); // State to control visibility
+  const [songSuggestions, setSongSuggestions] = useState<{ id: string; name: string; artists: { name: string }[]; album: { images: { url: string }[] } }[]>([]);
+  const { accessToken } = useAuth();
 
-    const { accessToken } = useAuth();
+  useFetchSongsName(inputValue, accessToken, setSongSuggestions);
 
-    useFetchSongsName(inputValue, accessToken, setSongSuggestions);
-
-    // Function to toggle the visibility of the suggested song list
-    const toggleSuggestions = () => {
-        setShowSuggestions((prev) => !prev);
-    };
-
-    return (
-        <div className="suggested-song-list">
-            {/* Button to toggle the visibility */}
-            <button
-                onClick={toggleSuggestions}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 mb-2"
+  return (
+    <div className="suggested-song-list">
+      {/* Conditionally render the song list or a message */}
+      {songSuggestions.length > 0 ? (
+        <ul className="list-none p-2 max-h-48 overflow-y-auto border-4 border-neutral-500 rounded-xl">
+          {songSuggestions.map((song) => (
+            <li
+              key={song.id}
+              className="flex items-center p-2 cursor-pointer hover:bg-neutral-300 rounded-xl"
+              onClick={() => onSongSelect(song)}
             >
-                {showSuggestions ? "Hide Suggestions" : "Show Suggestions"}
-            </button>
-
-            {/* Conditionally render the song list */}
-            {showSuggestions && songSuggestions.length > 0 && (
-                <ul className="list-disc p-2">
-                    {songSuggestions.map((song) => (
-                        <li
-                            key={song.id}
-                            className="p-1 cursor-pointer hover:bg-gray-200"
-                            onClick={() => onSongSelect(song)}
-                        >
-                            {song.name} by {song.artists.map((artist) => artist.name).join(", ")}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+              {/* Display the album image */}
+              <img
+                src={song.album.images[0]?.url || 'https://via.placeholder.com/50'} // Placeholder image if no album image is available
+                alt={song.name}
+                className="w-12 h-12 mr-3 rounded-md"
+              />
+              <div className="flex flex-col">
+                <p className="font-semibold text-left text-blue-500">{song.name}</p>
+                <p className="text-neutral-700 text-left">{song.artists.map((artist) => artist.name).join(", ")}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="p-2 text-gray-500">Type something to see suggestions</p>
+      )}
+    </div>
+  );
 };
 
 export default SuggestedSongList;
