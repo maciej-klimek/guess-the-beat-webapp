@@ -101,8 +101,8 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
   };
 
   return (
-    <div className="mb-4 w-full md:max-w-lg bg-gray2 rounded-lg shadow-lg overflow-hidden">
-      <div className="px-6 py-4">
+    <div className="w-full md:max-w-lg mx-auto">
+      <div className="bg-gray2 p-6 rounded-lg shadow-md mb-4">
         <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
         <div className="flex justify-center">
           <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
@@ -113,32 +113,45 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
             addSegmentsKey={addSegmentsKey}
           />
         </div>
-
         <ChancesDisplay remainingChances={remainingChances} />
+        <div className="flex w-1/2 justify-between m-auto mt-6">
+          <div className="flex flex-col items-center">
+            <button className="px-6 py-2 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700">
+              Date?
+            </button>
+            <span className="text-red-800 text-xs mt-1">-10</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <button className="px-8 py-2 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700">
+              Artist?
+            </button>
+            <span className="text-red-800 text-xs mt-1">-20</span>
+          </div>
+        </div>
+      </div>
 
-        {/* User Input Section with Suggestions and Submit Button */}
-        <div className="flex justify-center mt-8 mb-4">
-          <div className="flex items-center space-x-2">
-            <div className="flex flex-col items-center mt-5">
+      {/* Panel 2: Input and Buttons */}
+      <div className="bg-gray2 p-6 rounded-lg shadow-md mt-6">
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center space-x-6">
+            <div className="flex flex-col items-center mt-6">
               <button
                 onClick={toggleSuggestions}
                 className="flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
               >
                 <FaChevronDown className="text-xl" />
               </button>
-              <span className="text-red-500 text-xs mt-1">(-50pts)</span>
+              <span className="text-red-800 text-xs mt-2">-50</span>
             </div>
             <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
             <button
               onClick={handleGuess}
-              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 "
             >
               <FaCheck className="text-xl" />
             </button>
           </div>
         </div>
-
-        {/* Conditionally render the SuggestedSongList */}
         {showSuggestions && <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />}
       </div>
 

@@ -43,7 +43,7 @@ const UserDataManager: UserDataManager = {
         display_name: user.display_name,
         id: user.id,
         score,
-        image, // Include the user's profile image URL
+        image,
       };
     } catch (error) {
       console.error("Error fetching user data or score: ", error);

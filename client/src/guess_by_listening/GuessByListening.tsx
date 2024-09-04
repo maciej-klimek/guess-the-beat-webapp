@@ -49,9 +49,9 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
           <FaArrowRight className="text-xl" /> {/* Adjust icon size as needed */}
         </Link>
       </div>
-      <h2 className="text-4xl md:text-5xl mt-8 mb-20">
+      <h2 className="text-4xl md:text-5xl mt-8 mb-12">
         Guess By Listening 🎧 <br />
-        {playlistName && <span className="text-sm text-gray-700">from {playlistName}</span>}
+        {playlistName && <span className="text-lg text-neutral-700">from {playlistName}</span>}
       </h2>
       {newTrackChosen && (
         <div className="text-sm text-gray3 mt-4 absolute left-1/2 top-3/4 transform -translate-x-1/2">
