@@ -18,7 +18,6 @@ interface TrackGuesserProps {
     preview_url: string;
   };
   onNextTrack: () => void;
-  accessToken: string | null;
 }
 
 const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {

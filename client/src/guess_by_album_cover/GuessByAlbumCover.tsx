@@ -7,6 +7,7 @@ import Hearts from "./Hearts";
 import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
 import { FaArrowLeft } from "react-icons/fa";
+import UserDataManager from "../UserDataManager";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -36,8 +37,20 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [pointCounter, setPointCounter] = useState(100);
   const [showResult, setShowResult] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
+  const [userData, setUserData] = useState<any>(null); // State to store user data
 
   //console.log(albums);
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (accessToken) {
+        const userData = await UserDataManager.fetchUserData(accessToken);
+        setUserData(userData);
+      }
+    };
+
+    fetchUserData();
+  }, [accessToken]);
 
   useEffect(() => {
     const fetchAlbumSuggestions = async () => {
@@ -134,7 +147,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setAlbumSuggestions([]);
   };
 
-  const handleCheckAnswear = () => {
+  const handleCheckAnswear = async () => {
     if (inputValue.toLowerCase() !== guessedAlbum?.name.toLowerCase()) {
       removeBlur();
       setInputValue("");
@@ -142,6 +155,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       removeAllBlur();
       setIsCorrectGuess(true);
       setShowResult(true);
+      const newScore = (userData.score ?? 0) + 100;
+      //console.log("Trying to update score")
+      await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
+      //console.log("Recevied confirmation")
+      setUserData({ ...userData, score: newScore }); // Update local user state
+      //console.log("Updated Score")
     }
   };
 
