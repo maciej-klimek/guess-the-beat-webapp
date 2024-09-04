@@ -1,4 +1,5 @@
-const BASE_AUTH_URL = "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:5173";
+const BASE_AUTH_URL =
+  "https://accounts.spotify.com/authorize?client_id=463204cdb0ad4f2384e3e037fa48f4d8&response_type=code&redirect_uri=http://localhost:5173";
 
 const SCOPES = ["user-top-read", "user-library-read", "user-read-private"];
 
@@ -11,9 +12,7 @@ const Login = () => {
         <h1 className="text-5xl mb-8 text-center text-green-500">
           Guess the Beat
         </h1>
-        <h1 className="text-5xl mb-8 text-center">
-        🔥 🔥 🔥         
-        </h1>
+        <h1 className="text-5xl mb-8 text-center">🔥 🔥 🔥</h1>
 
         <p className="text-center mb-8 text-neutral-700">
           Please log in to continue

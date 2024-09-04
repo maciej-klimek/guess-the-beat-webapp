@@ -41,7 +41,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [userData, setUserData] = useState<any>(null); // State to store user data
 
   //console.log(albums);
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (accessToken) {
@@ -158,7 +158,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setShowResult(true);
       const newScore = (userData.score ?? 0) + 100;
       //console.log("Trying to update score")
-      await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
+      await UserDataManager.updateUserScore(
+        userData.id,
+        userData.display_name,
+        newScore
+      );
       //console.log("Recevied confirmation")
       setUserData({ ...userData, score: newScore }); // Update local user state
       //console.log("Updated Score")
@@ -172,12 +176,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
-    <div className="absolute top-8 left-8">
+      <div className="absolute top-8 left-8">
         <Link
-            to="/"
-            className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+          to="/"
+          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
         >
-            <FaArrowLeft className="text-xl" />
+          <FaArrowLeft className="text-xl" />
         </Link>
       </div>
       <h2 className="text-4xl md:text-5xl mt-8">
@@ -201,18 +205,18 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             />
           )}
           <Hearts emptyHeartsCount={emptyHeartsCount} />
-            <GuessInput
-              inputValue={inputValue}
-              onInputChange={(e) => setInputValue(e.target.value)}
-              onSubmit={handleCheckAnswear}
-              albumSuggestions={albumSuggestions}
-              onSelectAlbum={handleAlbumSelection}
-              pickedAlbum={pickedAlbum}
-            />
-        <div className="text-sm break-words w-full text-gray-800 mt-4">
-        <HintButton newText={guessedAlbum?.artists[0].name} />
-        <HintButton newText={guessedAlbum?.release_date} />          
-        </div>
+          <GuessInput
+            inputValue={inputValue}
+            onInputChange={(e) => setInputValue(e.target.value)}
+            onSubmit={handleCheckAnswear}
+            albumSuggestions={albumSuggestions}
+            onSelectAlbum={handleAlbumSelection}
+            pickedAlbum={pickedAlbum}
+          />
+          <div className="text-sm break-words w-full text-gray-800 mt-4">
+            <HintButton newText={guessedAlbum?.artists[0].name} />
+            <HintButton newText={guessedAlbum?.release_date} />
+          </div>
           {showResult && (
             <ResultModal
               isCorrectGuess={isCorrectGuess}

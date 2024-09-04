@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 .poppins-thin {
   font-family: "Poppins", sans-serif;
   font-weight: 100;
@@ -116,7 +115,7 @@
 }
 
 .bg-gray2 {
-  background-color: #1F1F1F;
+  background-color: #1f1f1f;
 }
 
 .bg-gray3 {
@@ -124,7 +123,7 @@
 }
 
 .text-gray2 {
-  color: #1F1F1F;
+  color: #1f1f1f;
 }
 
 .text-gray3 {

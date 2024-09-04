@@ -106,11 +106,16 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
         <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
         <div className="flex justify-center">
           <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
-          <PlaybackBar playbackDuration={playbackDuration} isPlaying={isPlaying} refreshKey={refreshKey} addSegmentsKey={addSegmentsKey} />
+          <PlaybackBar
+            playbackDuration={playbackDuration}
+            isPlaying={isPlaying}
+            refreshKey={refreshKey}
+            addSegmentsKey={addSegmentsKey}
+          />
         </div>
-        
+
         <ChancesDisplay remainingChances={remainingChances} />
-        
+
         {/* User Input Section with Suggestions and Submit Button */}
         <div className="flex justify-center mt-8 mb-4">
           <div className="flex items-center space-x-2">
@@ -124,21 +129,20 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
               <span className="text-red-500 text-xs mt-1">(-50pts)</span>
             </div>
             <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
-            <button onClick={handleGuess} className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600">
+            <button
+              onClick={handleGuess}
+              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+            >
               <FaCheck className="text-xl" />
             </button>
           </div>
         </div>
 
         {/* Conditionally render the SuggestedSongList */}
-        {showSuggestions && (
-          <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />
-        )}
+        {showSuggestions && <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />}
       </div>
 
-      {showResult && (
-        <ResultModal isCorrectGuess={isCorrectGuess} track={track} handleNextTrack={handleNextTrack} />
-      )}
+      {showResult && <ResultModal isCorrectGuess={isCorrectGuess} track={track} handleNextTrack={handleNextTrack} />}
     </div>
   );
 };

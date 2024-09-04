@@ -41,9 +41,9 @@ const AppRoutes: React.FC = () => {
 
       <Route path="/guess-by-album-cover" element={<PlaylistSelectionGBAC accessToken={accessToken} />} />
       <Route path="/guess-by-album-cover/:playlistId" element={<GuessByAlbumCover accessToken={accessToken} />} />
-      
+
       <Route path="/your-top-songs" element={<YourTopSongs accessToken={accessToken} />} />
-      <Route path="/ranking" element={<Ranking accessToken={accessToken}/>} />
+      <Route path="/ranking" element={<Ranking accessToken={accessToken} />} />
       <Route path="/logout" element={<Logout />} />
     </Routes>
   );

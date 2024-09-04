@@ -15,11 +15,7 @@ interface ResultModalProps {
   handleNextTrack: () => void;
 }
 
-const ResultModal: React.FC<ResultModalProps> = ({
-  isCorrectGuess,
-  track,
-  handleNextTrack,
-}) => {
+const ResultModal: React.FC<ResultModalProps> = ({ isCorrectGuess, track, handleNextTrack }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg text-center">
@@ -29,15 +25,9 @@ const ResultModal: React.FC<ResultModalProps> = ({
           <h3 className="text-2xl mb-4 text-red-500">Out of Chances! 😩</h3>
         )}
 
-        <img
-          src={track.images[0].url}
-          alt={track.name}
-          className="w-32 h-32 mx-auto mb-4 rounded-xl"
-        />
+        <img src={track.images[0].url} alt={track.name} className="w-32 h-32 mx-auto mb-4 rounded-xl" />
         <p className="text-lg font-semibold text-gray-800">{track.name}</p>
-        <p className="text-md text-gray-600">
-          by {track.artists.map((artist) => artist.name).join(", ")}
-        </p>
+        <p className="text-md text-gray-600">by {track.artists.map((artist) => artist.name).join(", ")}</p>
         <button
           onClick={handleNextTrack}
           className={`mt-4 px-4 py-2 ${

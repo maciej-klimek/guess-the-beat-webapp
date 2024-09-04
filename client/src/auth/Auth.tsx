@@ -25,7 +25,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (code && !accessToken) {
       axios
         .post("http://localhost:2115/login", { code })
-        .then(res => {
+        .then((res) => {
           setAccessToken(res.data.accessToken);
           setRefreshToken(res.data.refreshToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
@@ -39,7 +39,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } else if (accessToken && refreshToken && Date.now() >= expiresIn!) {
       axios
         .post("http://localhost:2115/refresh", { refreshToken })
-        .then(res => {
+        .then((res) => {
           setAccessToken(res.data.accessToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
         })
@@ -60,7 +60,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, expiresIn, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshToken, expiresIn, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

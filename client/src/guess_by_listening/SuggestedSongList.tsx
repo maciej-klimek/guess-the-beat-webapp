@@ -8,7 +8,14 @@ interface SuggestedSongListProps {
 }
 
 const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSongSelect }) => {
-  const [songSuggestions, setSongSuggestions] = useState<{ id: string; name: string; artists: { name: string }[]; album: { images: { url: string }[] } }[]>([]);
+  const [songSuggestions, setSongSuggestions] = useState<
+    {
+      id: string;
+      name: string;
+      artists: { name: string }[];
+      album: { images: { url: string }[] };
+    }[]
+  >([]);
   const { accessToken } = useAuth();
 
   useFetchSongsName(inputValue, accessToken, setSongSuggestions);
@@ -26,7 +33,7 @@ const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSon
             >
               {/* Display the album image */}
               <img
-                src={song.album.images[0]?.url || 'https://via.placeholder.com/50'} // Placeholder image if no album image is available
+                src={song.album.images[0]?.url || "https://via.placeholder.com/50"} // Placeholder image if no album image is available
                 alt={song.name}
                 className="w-12 h-12 mr-3 rounded-md"
               />

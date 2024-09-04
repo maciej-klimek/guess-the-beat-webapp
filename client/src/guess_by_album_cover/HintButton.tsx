@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface ChangeTextButtonProps {
   newText: string;
 }
 
-const HintButton: React.FC<ChangeTextButtonProps> = ({newText }) => {
+const HintButton: React.FC<ChangeTextButtonProps> = ({ newText }) => {
   // Step 1: Set initial text
   const [buttonText, setButtonText] = useState<string>("Hint");
 
