@@ -45,20 +45,10 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
 
     updateData();
   }, [userData, score]);
-
-  const incrementScore = () => {
-    if (score !== null) {
-      setScore(score + 1);
-    }
-  };
-
-  const goToRanking = () => {
-    navigate("/ranking");
-  };
-
+  console.log(score);
   return (
     <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
-      <Settings userImage={userData?.image} />
+      <Settings userScore={score} userImage={userData?.image} />
       <div className="flex-grow flex items-center justify-center">
         <div>
           <h1 className="text-5xl">Guess the beat!</h1>
@@ -76,18 +66,6 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
               </div>
             </div>
           </div>
-          {userData && score !== null && (
-            <div className="mt-20">
-              <h2 className="text-2xl">Welcome, {userData.display_name}</h2>
-              <p className="text-xl">Your score: {score}</p>
-              <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={incrementScore}>
-                Increment Score
-              </button>
-              <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded ml-4" onClick={goToRanking}>
-                View Ranking
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

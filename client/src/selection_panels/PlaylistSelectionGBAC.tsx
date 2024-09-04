@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft } from "react-icons/fa";
 
 interface Playlist {
   id: string;
@@ -14,9 +14,7 @@ interface PlaylistSelectionProps {
   accessToken: string;
 }
 
-const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
-  accessToken,
-}) => {
+const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -94,8 +92,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const playlistImageUrl =
-        response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
       return playlistImageUrl;
     } catch (error) {
       console.error("Error fetching playlist image:", error);
@@ -146,9 +143,8 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       // Przekształć obiekt unikalnych albumów z powrotem na tablicę
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
 
-      const playlistName =
-        playlistId === "top" ? "Your Top Songs" : response.data.name;
-      console.log(uniqueAlbumsArray)
+      const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
+      console.log(uniqueAlbumsArray);
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { tracks: uniqueAlbumsArray, playlistName },
       });
@@ -162,18 +158,15 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
-    <div className="absolute top-8 left-8">
+      <div className="absolute top-8 left-8">
         <Link
-            to="/"
-            className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+          to="/"
+          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
         >
-            <FaArrowLeft className="text-xl" />
+          <FaArrowLeft className="text-xl" />
         </Link>
-    </div>
+      </div>
       <h2 className="text-4xl md:text-5xl mt-8">Select a playlist</h2>
-      <h5 className="text-xl text-neutral-800 md:text-1xl mt-6 mb-4">
-        To guess albums from
-      </h5>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12 max-w-4xl bg-gray2 p-8 rounded-2xl">
         {playlists.map((playlist) => (
@@ -197,9 +190,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         ))}
       </div>
 
-      {loading && (
-        <p className="text-gray-500 absolute bottom-12">Loading...</p>
-      )}
+      {loading && <p className="text-gray-500 absolute bottom-12">Loading...</p>}
       {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
     </div>
   );

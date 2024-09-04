@@ -47,7 +47,7 @@ const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSon
           ))}
         </ul>
       ) : (
-        <p className="p-2 text-gray-500">Type something to see suggestions</p>
+        <p className="p-2 text-neutral-700">Type something to see suggestions</p>
       )}
     </div>
   );

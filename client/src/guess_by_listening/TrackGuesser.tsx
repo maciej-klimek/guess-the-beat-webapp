@@ -27,11 +27,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
   const [playbackDuration, setPlaybackDuration] = useState(2);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showResult, setShowResult] = useState(false);
-  const [hasPlayed, setHasPlayed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [addSegmentsKey, setAddSegmentsKey] = useState(0);
-  const [user, setUser] = useState<any>(null); // State to store user data
-  const [showSuggestions, setShowSuggestions] = useState(false); // State to control suggestion list visibility
+  const [user, setUser] = useState<any>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSuggestionsLocked, setIsSuggestionsLocked] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { accessToken } = useAuth();
@@ -53,12 +53,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
       if (user) {
         const newScore = (user.score ?? 0) + 100;
         await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
-        setUser({ ...user, score: newScore }); // Update local user state
+        setUser({ ...user, score: newScore });
       }
     } else {
       setRemainingChances((prev) => prev - 1);
       setPlaybackDuration((prev) => prev + 2);
-      setHasPlayed(false);
       setAddSegmentsKey((prev) => prev + 1);
       if (remainingChances - 1 === 0) {
         setShowResult(true);
@@ -72,18 +71,17 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
     setUserGuess("");
     setRemainingChances(5);
     setPlaybackDuration(2);
-    setHasPlayed(false);
     setRefreshKey((prev) => prev + 1);
+    setIsSuggestionsLocked(false); // Reset lock state
     onNextTrack();
   };
 
   const playAudioSegment = () => {
-    if (!hasPlayed && audioRef.current) {
+    if (audioRef.current) {
       audioRef.current.volume = 0.3;
       audioRef.current.currentTime = 0;
       audioRef.current.play();
       setIsPlaying(true);
-      setHasPlayed(true);
       setTimeout(() => {
         audioRef.current?.pause();
         setIsPlaying(false);
@@ -93,18 +91,22 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
 
   const handleSongSelect = (song: { id: string; name: string }) => {
     setUserGuess(song.name);
-    setShowSuggestions(false); // Hide suggestions after selecting a song
+    setShowSuggestions(false);
   };
 
   const toggleSuggestions = () => {
-    setShowSuggestions((prev) => !prev);
+    if (!isSuggestionsLocked) {
+      setShowSuggestions((prev) => !prev);
+      setIsSuggestionsLocked(true);
+    }
   };
 
   return (
-    <div className="w-full md:max-w-lg mx-auto">
-      <div className="bg-gray2 p-6 rounded-lg shadow-md mb-4">
+    <div className="w-full md:max-w-lg mx-auto mt-8">
+      {/* Panel 1: Top Section */}
+      <div className="bg-gray2 p-8 rounded-xl shadow-md mb-4 ">
         <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
-        <div className="flex justify-center">
+        <div className="flex justify-self-center">
           <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
           <PlaybackBar
             playbackDuration={playbackDuration}
@@ -114,39 +116,25 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
           />
         </div>
         <ChancesDisplay remainingChances={remainingChances} />
-        <div className="flex w-1/2 justify-between m-auto mt-6">
-          <div className="flex flex-col items-center">
-            <button className="px-6 py-2 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700">
-              Date?
-            </button>
-            <span className="text-red-800 text-xs mt-1">-10</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="px-8 py-2 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700">
-              Artist?
-            </button>
-            <span className="text-red-800 text-xs mt-1">-20</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Panel 2: Input and Buttons */}
-      <div className="bg-gray2 p-6 rounded-lg shadow-md mt-6">
-        <div className="flex justify-center mb-4">
-          <div className="flex items-center space-x-6">
-            <div className="flex flex-col items-center mt-6">
+        <div className="bg-gray1 h-1 w-full mt-8 mb-2 rounded-xl"></div>
+        <div className="flex justify-center ">
+          <div className="flex items-center space-x-4">
+            <div className="flex flex-col items-center">
               <button
                 onClick={toggleSuggestions}
-                className="flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+                className={`flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 mt-6 ${
+                  isSuggestionsLocked ? "opacity-50 cursor-not-allowed mt-0" : ""
+                }`}
+                disabled={isSuggestionsLocked}
               >
                 <FaChevronDown className="text-xl" />
               </button>
-              <span className="text-red-800 text-xs mt-2">-50</span>
+              {!isSuggestionsLocked && <span className="text-red-800 text-xs mt-2">-50</span>}
             </div>
             <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
             <button
               onClick={handleGuess}
-              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 "
+              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
             >
               <FaCheck className="text-xl" />
             </button>

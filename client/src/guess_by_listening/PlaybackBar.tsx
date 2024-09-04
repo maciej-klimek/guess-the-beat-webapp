@@ -8,11 +8,8 @@ interface PlaybackBarProps {
 }
 
 const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, refreshKey, addSegmentsKey }) => {
-  const [timeLeft, setTimeLeft] = useState(playbackDuration);
   const [heights, setHeights] = useState<number[]>([]);
-  const [prevAddSegmentsKey, setPrevAddSegmentsKey] = useState<number>(addSegmentsKey);
-
-  const initialSegmentCount = 36;
+  const [timeLeft, setTimeLeft] = useState(playbackDuration);
 
   const generateRandomHeights = (min: number, max: number, count: number) => {
     const heightsArray = [];
@@ -23,22 +20,20 @@ const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, 
     return heightsArray;
   };
 
+  // Initialize or reset the heights when playbackDuration or refreshKey changes
   useEffect(() => {
-    setHeights(generateRandomHeights(20, 100, initialSegmentCount));
-    setTimeLeft(playbackDuration);
-  }, [playbackDuration, refreshKey]);
+    setHeights(generateRandomHeights(20, 100, 36)); // Initial 36 segments
+  }, [refreshKey]);
 
+  // Append new segments when addSegmentsKey changes
   useEffect(() => {
-    if (addSegmentsKey !== prevAddSegmentsKey) {
-      const newSegmentCount = playbackDuration;
-      setHeights((prevHeights) => [
-        ...prevHeights.filter((_, index) => ((index + 1) % playbackDuration) + 1 !== 0),
-        ...generateRandomHeights(20, 100, newSegmentCount),
-      ]);
-      setPrevAddSegmentsKey(addSegmentsKey);
-    }
-  }, [addSegmentsKey, playbackDuration, prevAddSegmentsKey]);
+    setHeights((prevHeights) => [
+      ...prevHeights.filter((_, index) => ((index + 1) % 10) / playbackDuration !== 0), // Remove every 3rd segment
+      ...generateRandomHeights(20, 100, 5), // Add 5 new segments
+    ]);
+  }, [addSegmentsKey]);
 
+  // Animation effect for segment progress
   useEffect(() => {
     let animationFrameId: number;
     let startTime: number;
@@ -46,9 +41,7 @@ const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, 
 
     const animate = (timestamp: number) => {
       if (isPlaying) {
-        if (!startTime) {
-          startTime = timestamp;
-        }
+        if (!startTime) startTime = timestamp;
         elapsedTime = timestamp - startTime;
 
         const newTimeLeft = playbackDuration - elapsedTime / 1000;
@@ -68,7 +61,7 @@ const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, 
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [playbackDuration, isPlaying]);
+  }, [isPlaying, playbackDuration]);
 
   const progressPercentage = (1 - timeLeft / playbackDuration) * 100;
   const activeSegments = Math.ceil((progressPercentage / 100) * heights.length);
