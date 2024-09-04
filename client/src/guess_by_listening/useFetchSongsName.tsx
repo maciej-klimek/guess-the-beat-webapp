@@ -13,7 +13,7 @@ const useFetchSongsName = (
     accessToken: string | null,
     setSongSuggestions: React.Dispatch<React.SetStateAction<Song[]>>
 ) => {
-    console.log(accessToken)
+    //console.log(accessToken)
     useEffect(() => {
         const fetchSongsName = async () => {
             if (!inputValue) {
@@ -41,7 +41,7 @@ const useFetchSongsName = (
                 }));
 
                 // Log the fetched songs to the console
-                console.log("Fetched Songs:", songs);
+                //console.log("Fetched Songs:", songs);
 
                 setSongSuggestions(songs);
             } catch (error) {

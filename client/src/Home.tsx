@@ -3,7 +3,7 @@ import ByListeningPanel from "./selection_panels/ByListeningPanel";
 import ByAlbumCoverPanel from "./selection_panels/ByAlbumCoverPanel";
 import Settings from "./Settings";
 import { useEffect, useState } from "react";
-import ScoreManagement from "./UserDataManager"; // Import ScoreManagement
+import UserDataManager from "./UserDataManager"; // Import ScoreManagement
 
 interface HomeProps {
     accessToken: string | null;
@@ -24,7 +24,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const user = await ScoreManagement.fetchUserData(accessToken);
+            const user = await UserDataManager.fetchUserData(accessToken);
             if (user) {
                 setUserData(user);
                 setScore(user.score);
@@ -39,7 +39,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
     useEffect(() => {
         const updateData = async () => {
             if (userData && userData.id && score !== null) {
-                await ScoreManagement.updateScoreOnServer(userData.id, userData.display_name, score);
+                await UserDataManager.updateUserScore(userData.id, userData.display_name, score);
             }
         };
 

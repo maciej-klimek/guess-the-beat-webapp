@@ -7,12 +7,12 @@ interface User {
     image: string | null;
 }
 
-interface ScoreManager {
+interface UserDataManager {
     fetchUserData: (accessToken: string | null) => Promise<User | null>;
-    updateScoreOnServer: (userId: string, displayName: string, score: number | null) => Promise<void>;
+    updateUserScore: (userId: string, displayName: string, score: number | null) => Promise<void>;
 }
 
-const ScoreManager: ScoreManager = {
+const UserDataManager: UserDataManager = {
     fetchUserData: async (accessToken) => {
         if (!accessToken) {
             console.error("Access token is null or undefined");
@@ -51,7 +51,7 @@ const ScoreManager: ScoreManager = {
         }
     },
 
-    updateScoreOnServer: async (userId, displayName, score) => {
+    updateUserScore: async (userId, displayName, score) => {
         if (!userId || score === null) {
             console.error("User ID or score is invalid");
             return;
@@ -71,4 +71,4 @@ const ScoreManager: ScoreManager = {
     }
 };
 
-export default ScoreManager;
+export default UserDataManager;

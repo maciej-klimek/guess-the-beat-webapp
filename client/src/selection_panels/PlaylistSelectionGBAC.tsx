@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaArrowRight } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface Playlist {
   id: string;
@@ -162,14 +162,14 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
-      <div className="absolute top-6 right-4">
+    <div className="absolute top-8 left-8">
         <Link
-          to="/"
-          className="text-white bg-gray2 p-2 rounded hover:bg-gray-800"
+            to="/"
+            className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
         >
-          Home
+            <FaArrowLeft className="text-xl" />
         </Link>
-      </div>
+    </div>
       <h2 className="text-4xl md:text-5xl mt-8">Select a playlist</h2>
       <h5 className="text-xl text-neutral-800 md:text-1xl mt-6 mb-4">
         To guess albums from

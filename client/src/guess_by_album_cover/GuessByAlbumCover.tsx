@@ -6,6 +6,7 @@ import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
 import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
+import { FaArrowLeft } from "react-icons/fa";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -53,7 +54,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             },
           }
         );
-        const albums = response.data.albums.items.map((album: any) => ({
+        const albums = response.data.albums.items.map((album: Album) => ({
           id: album.id,
           images: album.images,
           release_date: album.release_date,
@@ -153,11 +154,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
-      <div className="absolute top-6 right-4">
-        <Link to="/" className="text-white bg-gray2 p-2 rounded">
-          Home
+    <div className="absolute top-8 left-8">
+        <Link
+            to="/"
+            className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+        >
+            <FaArrowLeft className="text-xl" />
         </Link>
-      </div>
+    </div>
       <h2 className="text-5xl text-center text-green-500">
         Guess By Album Cover
       </h2>
