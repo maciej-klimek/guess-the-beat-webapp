@@ -148,7 +148,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
 
       const playlistName =
         playlistId === "top" ? "Your Top Songs" : response.data.name;
-
+      console.log(uniqueAlbumsArray)
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { tracks: uniqueAlbumsArray, playlistName },
       });

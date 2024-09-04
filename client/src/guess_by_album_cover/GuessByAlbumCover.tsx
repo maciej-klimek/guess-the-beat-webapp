@@ -8,6 +8,7 @@ import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
 import { FaArrowLeft } from "react-icons/fa";
 import UserDataManager from "../UserDataManager";
+import HintButton from "./HintButton";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -193,14 +194,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       )}
       {guessedAlbum && (
         <div className="gap-8 mt-4 max-w-4xl bg-gray2 p-12 rounded-2xl">
-          {guessedAlbum && guessedAlbum.images[0] && (
+          {guessedAlbum.images[0] && (
             <AlbumCover
               imageUrl={guessedAlbum.images[0].url}
               visiblePanels={visiblePanels}
             />
           )}
-          {guessedAlbum && <Hearts emptyHeartsCount={emptyHeartsCount} />}
-          {guessedAlbum && (
+          <Hearts emptyHeartsCount={emptyHeartsCount} />
             <GuessInput
               inputValue={inputValue}
               onInputChange={(e) => setInputValue(e.target.value)}
@@ -209,13 +209,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
               onSelectAlbum={handleAlbumSelection}
               pickedAlbum={pickedAlbum}
             />
-          )}
-          {/* {guessedAlbum && (
         <div className="text-sm break-words w-full text-gray-800 mt-4">
-          Album Title: {guessedAlbum.name}
+        <HintButton newText={guessedAlbum?.artists[0].name} />
+        <HintButton newText={guessedAlbum?.release_date} />          
         </div>
-      )} */}
-          {showResult && guessedAlbum && (
+          {showResult && (
             <ResultModal
               isCorrectGuess={isCorrectGuess}
               track={guessedAlbum}
