@@ -141,7 +141,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
       });
       // Przekształć obiekt unikalnych albumów z powrotem na tablicę
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-      const cutUniqueAlbumsArray=uniqueAlbumsArray.slice(0, 2);
+      const cutUniqueAlbumsArray=uniqueAlbumsArray.slice(0, 15);
       const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
       console.log(uniqueAlbumsArray);
       navigate(`/guess-by-album-cover/${playlistId}`, {
