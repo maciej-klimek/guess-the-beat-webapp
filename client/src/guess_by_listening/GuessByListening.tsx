@@ -12,7 +12,7 @@ interface Track {
   id: string;
   name: string;
   artists: { name: string }[];
-  album: { release_date: string, images: { url: string }[] };
+  album: { release_date: string; images: { url: string }[] };
   preview_url: string;
 }
 
@@ -22,7 +22,6 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
   const tracks: Track[] = location.state?.tracks || [];
   const playlistName: string | undefined = location.state?.playlistName;
   const [avaliavlePoints, setAvaliavlePoints] = useState(100);
-
 
   useEffect(() => {
     chooseRandomTrack(tracks);
@@ -40,11 +39,11 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
   };
 
   const handleDateClick = () => {
-    setAvaliavlePoints(avaliavlePoints-10);
+    setAvaliavlePoints(avaliavlePoints - 10);
   };
 
   const handleArtistClick = () => {
-    setAvaliavlePoints(avaliavlePoints-10);
+    setAvaliavlePoints(avaliavlePoints - 20);
   };
 
   return (
@@ -59,47 +58,62 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       </div>
       <h2 className="text-4xl md:text-5xl mt-8 mb-12">
         Guess By Listening 🎧 <br />
-        {playlistName && <span className="text-lg text-neutral-700">from {playlistName}</span>}
+        {playlistName && (
+          <span className="text-lg text-neutral-700">from {playlistName}</span>
+        )}
       </h2>
 
       <div className="flex w-full items-center justify-center space-x-28">
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
-          <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
-          <span>{avaliavlePoints}/100</span>
+          <span className="text-sm text-neutral-700 mb-4">
+            Points You can get:
+          </span>
+          <span
+            style={{
+              color: `hsl(${(avaliavlePoints / 100) * 137}, 63%, 56%)`,
+            }}
+          >
+            {avaliavlePoints}/100
+          </span>
         </div>
 
         {/* Track Guesser */}
         {selectedTrack && (
           <div className="mx-4">
-            <TrackGuesser track={selectedTrack} onNextTrack={handleNextTrack} />
+            <TrackGuesser
+              track={selectedTrack}
+              onNextTrack={handleNextTrack}
+              avaliablePoints={avaliavlePoints}
+              setAvaliavlePoints={setAvaliavlePoints}
+            />
           </div>
         )}
 
         {/* Yellow Buttons */}
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
-          <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
-          <div className="flex flex-col space-y-4">
-          <div className="text-sm break-words w-full text-gray-800 mt-4 flex">
-            <div>
-              <HintButton
-                labelText="Artist name"
-                newText={selectedTrack?.artists[0].name}
-                resetOnChangeOf={selectedTrack}
-                onClick={handleArtistClick}
-                pointsToRemove={10}
-              />
-            </div>
-            <div>
+          <h3 className="text-base text-neutral-700 font-semibold mb-4">
+            Need some hints?
+          </h3>
+          <div className="flex flex-col space-y-4 w-full">
+            <div className="w-full">
               <HintButton
                 labelText="Release Date"
                 newText={selectedTrack?.album.release_date}
                 resetOnChangeOf={selectedTrack}
                 onClick={handleDateClick}
+                pointsToRemove={10}
+              />
+            </div>
+            <div className="w-full">
+              <HintButton
+                labelText="Artist name"
+                newText={selectedTrack?.artists[0].name}
+                resetOnChangeOf={selectedTrack}
+                onClick={handleArtistClick}
                 pointsToRemove={20}
               />
             </div>
-          </div>
           </div>
         </div>
       </div>

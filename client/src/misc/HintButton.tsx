@@ -4,7 +4,7 @@ interface ChangeTextButtonProps {
   newText: string;
   labelText: string;
   resetOnChangeOf: any;
-  onClick: () => void; 
+  onClick: () => void;
   pointsToRemove: number;
 }
 
@@ -22,7 +22,7 @@ const HintButton: React.FC<ChangeTextButtonProps> = ({
   const handleClick = () => {
     setButtonText(newText);
     setIsChanged(true);
-    onClick(); 
+    onClick();
   };
 
   useEffect(() => {
@@ -32,19 +32,24 @@ const HintButton: React.FC<ChangeTextButtonProps> = ({
 
   return (
     <div>
-    <div>
-    <button
-      className={`py-2 w-32 mx-2 text-white rounded-md shadow-md  ${
-        isChanged ? "bg-blue-500" : "bg-yellow-600 hover:bg-yellow-700"
-      }`}
-      onClick={handleClick} disabled={isChanged}
-    >
-      {buttonText}
-    </button>
-    </div>
-    <div>
-    {!isChanged && <span className="text-red-800 text-xs"> - {pointsToRemove}</span>}
-    </div>
+      <div>
+        <button
+          className={`py-2 w-32 mx-2 rounded-md shadow-md ${
+            isChanged
+              ? "bg-neutral-800 text-blue-500"
+              : "bg-yellow-600 hover:bg-yellow-700 text-white"
+          }`}
+          onClick={handleClick}
+          disabled={isChanged}
+        >
+          {buttonText}
+        </button>
+      </div>
+      <div>
+        {!isChanged && (
+          <span className="text-red-800 text-xs"> - {pointsToRemove}</span>
+        )}
+      </div>
     </div>
   );
 };

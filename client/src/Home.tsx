@@ -39,7 +39,11 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
   useEffect(() => {
     const updateData = async () => {
       if (userData && userData.id && score !== null) {
-        await UserDataManager.updateUserScore(userData.id, userData.display_name, score);
+        await UserDataManager.updateUserScore(
+          userData.id,
+          userData.display_name,
+          score
+        );
       }
     };
 
@@ -54,12 +58,12 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
           <h1 className="text-5xl">Guess the beat!</h1>
           <div className="flex justify-center w-screen">
             <div className="flex w-3/4 mt-20 max-w-5xl mx-auto">
-              <div className="flex-1 mr-16">
+              <div className="flex-1 mr-20">
                 <Link to="/guess-by-listening">
                   <ByListeningPanel />
                 </Link>
               </div>
-              <div className="flex-1 ml-16">
+              <div className="flex-1 ml-20">
                 <Link to="/guess-by-album-cover">
                   <ByAlbumCoverPanel />
                 </Link>

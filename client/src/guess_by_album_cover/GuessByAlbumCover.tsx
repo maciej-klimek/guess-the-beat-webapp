@@ -4,11 +4,11 @@ import { Link, useLocation } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
-import ResultModal from "./ResultModal";
+import ResultModal from "./ResultModalBGAC";
 import { FaArrowLeft } from "react-icons/fa";
 import UserDataManager from "../UserDataManager";
 import HintButton from "../misc/HintButton";
-import { normalizeTitle } from "../misc/normalizeTitle"
+import { normalizeTitle } from "../misc/normalizeTitle";
 import SummaryModal from "./SummaryModal";
 
 interface GuessByAlbumCoverProps {
@@ -42,7 +42,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [showSummary, setShowSummary] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [userData, setUserData] = useState<any>(null); // State to store user data
- 
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (accessToken) {
@@ -90,14 +90,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const handlePlayGame = () => {
     resetGame();
     if (albums.length > 0) {
-      const randomIndex = getRandomInt(0, albums.length-1);
+      const randomIndex = getRandomInt(0, albums.length - 1);
       const selectedAlbum = albums[randomIndex];
       setGuessedAlbum(selectedAlbum);
       albums.splice(randomIndex, 1);
     } else {
       setShowSummary(true);
       console.warn("No albums found in the selected playlist");
-
     }
   };
 
@@ -168,12 +167,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         userData.display_name,
         newScore
       );
-      console.log("Recevied confirmation")
+      console.log("Recevied confirmation");
       setUserData({ ...userData, score: newScore }); // Update local user state
       //console.log("Updated Score")
     }
   };
-  
 
   const handleNextTrack = () => {
     setShowResult(false);
@@ -181,11 +179,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     handlePlayGame();
   };
   const handleDateClick = () => {
-    setPointCounter(pointCounter-10);
+    setPointCounter(pointCounter - 10);
   };
 
   const handleArtistClick = () => {
-    setPointCounter(pointCounter-10);
+    setPointCounter(pointCounter - 10);
   };
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
@@ -249,15 +247,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
           {showResult && (
             <ResultModal
-            isCorrectGuess={isCorrectGuess}
-            track={guessedAlbum}
-            handleNextTrack={handleNextTrack}
-          />
+              isCorrectGuess={isCorrectGuess}
+              track={guessedAlbum}
+              handleNextTrack={handleNextTrack}
+              avaliablePoints={pointCounter}
+            />
           )}
-
         </div>
       )}
-    {showSummary && ( <SummaryModal finalScore={pointSummary}/>)}
+      {showSummary && <SummaryModal finalScore={pointSummary} />}
     </div>
   );
 };
