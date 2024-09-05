@@ -139,14 +139,13 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
           uniqueAlbums[album.id] = album; // Dodaj album do obiektu, jeśli nie istnieje
         }
       });
-
       // Przekształć obiekt unikalnych albumów z powrotem na tablicę
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-
+      const cutUniqueAlbumsArray=uniqueAlbumsArray.slice(0, 15);
       const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
       console.log(uniqueAlbumsArray);
       navigate(`/guess-by-album-cover/${playlistId}`, {
-        state: { tracks: uniqueAlbumsArray, playlistName },
+        state: { tracks: cutUniqueAlbumsArray, playlistName },
       });
     } catch (error) {
       console.error("Error fetching tracks:", error);

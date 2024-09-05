@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import TrackGuesser from "./TrackGuesser";
 import { FaArrowRight } from "react-icons/fa";
+import HintButton from "../misc/HintButton";
 
 interface GuessByListeningProps {
   accessToken: string;
@@ -11,7 +12,7 @@ interface Track {
   id: string;
   name: string;
   artists: { name: string }[];
-  album: { images: { url: string }[] };
+  album: { release_date: string, images: { url: string }[] };
   preview_url: string;
 }
 
@@ -21,8 +22,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
   const tracks: Track[] = location.state?.tracks || [];
   const playlistName: string | undefined = location.state?.playlistName;
   const [avaliavlePoints, setAvaliavlePoints] = useState(100);
-  const [isArtistLocked, setIsArtistLocked] = useState(false);
-  const [isDateLocked, setIsDateLocked] = useState(false);
+
 
   useEffect(() => {
     chooseRandomTrack(tracks);
@@ -36,20 +36,15 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
 
   const handleNextTrack = () => {
     chooseRandomTrack(tracks);
+    setAvaliavlePoints(100);
   };
 
   const handleDateClick = () => {
-    if (!isDateLocked) {
-      // Logic to show date information
-      setIsDateLocked(true); // Lock the date button after clicking
-    }
+    setAvaliavlePoints(avaliavlePoints-10);
   };
 
   const handleArtistClick = () => {
-    if (!isArtistLocked) {
-      // Logic to show artist information
-      setIsArtistLocked(true); // Lock the artist button after clicking
-    }
+    setAvaliavlePoints(avaliavlePoints-10);
   };
 
   return (
@@ -85,30 +80,26 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
           <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
           <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleDateClick}
-                className={`py-2 w-32 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700 ${
-                  isDateLocked ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isDateLocked}
-              >
-                Date?
-              </button>
-              {!isDateLocked && <span className="text-red-800 text-xs">-10</span>}
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
+          <div className="text-sm break-words w-full text-gray-800 mt-4 flex">
+            <div>
+              <HintButton
+                labelText="Artist name"
+                newText={selectedTrack?.artists[0].name}
+                resetOnChangeOf={selectedTrack}
                 onClick={handleArtistClick}
-                className={`py-2 w-32 bg-yellow-600 text-white rounded-md shadow-md hover:bg-yellow-700 ${
-                  isArtistLocked ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isArtistLocked}
-              >
-                Artist?
-              </button>
-              {!isArtistLocked && <span className="text-red-800 text-xs">-20</span>}
+                pointsToRemove={10}
+              />
             </div>
+            <div>
+              <HintButton
+                labelText="Release Date"
+                newText={selectedTrack?.album.release_date}
+                resetOnChangeOf={selectedTrack}
+                onClick={handleDateClick}
+                pointsToRemove={20}
+              />
+            </div>
+          </div>
           </div>
         </div>
       </div>

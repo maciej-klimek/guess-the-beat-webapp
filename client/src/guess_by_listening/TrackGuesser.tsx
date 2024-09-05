@@ -8,6 +8,7 @@ import SuggestedSongList from "./SuggestedSongList";
 import UserDataManager from "../UserDataManager";
 import { useAuth } from "../auth/Auth";
 import { FaCheck, FaChevronDown } from "react-icons/fa";
+import { normalizeTitle } from "../misc/normalizeTitle"
 
 interface TrackGuesserProps {
   track: {
@@ -47,7 +48,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack }) => {
   }, [accessToken]);
 
   const handleGuess = async () => {
-    if (userGuess.toLowerCase() === track.name.toLowerCase()) {
+    if (normalizeTitle(userGuess) === normalizeTitle(track.name)) {
       setIsCorrectGuess(true);
       setShowResult(true);
       if (user) {
