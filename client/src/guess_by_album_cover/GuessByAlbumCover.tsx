@@ -8,7 +8,8 @@ import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
 import { FaArrowLeft } from "react-icons/fa";
 import UserDataManager from "../UserDataManager";
-import HintButton from "./HintButton";
+import HintButton from "../misc/HintButton";
+import { normalizeTitle } from "../misc/normalizeTitle"
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -149,7 +150,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const handleCheckAnswear = async () => {
-    if (inputValue.toLowerCase() !== guessedAlbum?.name.toLowerCase()) {
+    if (normalizeTitle(inputValue) !== normalizeTitle(guessedAlbum?.name)) {
       removeBlur();
       setInputValue("");
     } else {
@@ -173,7 +174,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setShowResult(false);
     handlePlayGame();
   };
+  const handleDateClick = () => {
+    //ogic to remove points
+    setPointCounter(pointCounter-10);
+  };
 
+  const handleArtistClick = () => {
+    //ogic to remove points
+    setPointCounter(pointCounter-10);
+  };
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
       <div className="absolute top-8 left-8">
@@ -213,9 +222,25 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             onSelectAlbum={handleAlbumSelection}
             pickedAlbum={pickedAlbum}
           />
-          <div className="text-sm break-words w-full text-gray-800 mt-4">
-            <HintButton newText={guessedAlbum?.artists[0].name} />
-            <HintButton newText={guessedAlbum?.release_date} />
+          <div className="text-sm break-words w-full justify-center text-gray-800 mt-4 flex">
+            <div>
+              <HintButton
+                labelText="Artist name"
+                newText={guessedAlbum?.artists[0].name}
+                resetOnChangeOf={guessedAlbum}
+                onClick={handleArtistClick}
+                pointsToRemove={10}
+              />
+            </div>
+            <div>
+              <HintButton
+                labelText="Release Date"
+                newText={guessedAlbum?.release_date}
+                resetOnChangeOf={guessedAlbum}
+                onClick={handleDateClick}
+                pointsToRemove={10}
+              />
+            </div>
           </div>
           {showResult && (
             <ResultModal
