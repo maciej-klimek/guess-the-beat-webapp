@@ -4,12 +4,12 @@ import { Link, useLocation } from "react-router-dom";
 import AlbumCover from "./AlbumCover";
 import GuessInput from "./GuessInput";
 import Hearts from "./Hearts";
-import GuessButton from "./GuessButton";
 import ResultModal from "./ResultModal";
 import { FaArrowLeft } from "react-icons/fa";
 import UserDataManager from "../UserDataManager";
 import HintButton from "../misc/HintButton";
 import { normalizeTitle } from "../misc/normalizeTitle"
+import SummaryModal from "./SummaryModal";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -37,12 +37,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
+  const [pointSummary, setPointSummary] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [userData, setUserData] = useState<any>(null); // State to store user data
-
-  //console.log(albums);
-
+ 
   useEffect(() => {
     const fetchUserData = async () => {
       if (accessToken) {
@@ -52,6 +52,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     };
 
     fetchUserData();
+    handlePlayGame();
   }, [accessToken]);
 
   useEffect(() => {
@@ -89,12 +90,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const handlePlayGame = () => {
     resetGame();
     if (albums.length > 0) {
-      const randomIndex = getRandomInt(0, albums.length);
+      const randomIndex = getRandomInt(0, albums.length-1);
       const selectedAlbum = albums[randomIndex];
       setGuessedAlbum(selectedAlbum);
       albums.splice(randomIndex, 1);
     } else {
+      setShowSummary(true);
       console.warn("No albums found in the selected playlist");
+
     }
   };
 
@@ -157,30 +160,31 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       removeAllBlur();
       setIsCorrectGuess(true);
       setShowResult(true);
-      const newScore = (userData.score ?? 0) + 100;
+      setPointSummary(pointSummary + pointCounter);
+      const newScore = (userData.score ?? 0) + pointCounter;
       //console.log("Trying to update score")
       await UserDataManager.updateUserScore(
         userData.id,
         userData.display_name,
         newScore
       );
-      //console.log("Recevied confirmation")
+      console.log("Recevied confirmation")
       setUserData({ ...userData, score: newScore }); // Update local user state
       //console.log("Updated Score")
     }
   };
+  
 
   const handleNextTrack = () => {
     setShowResult(false);
+
     handlePlayGame();
   };
   const handleDateClick = () => {
-    //ogic to remove points
     setPointCounter(pointCounter-10);
   };
 
   const handleArtistClick = () => {
-    //ogic to remove points
     setPointCounter(pointCounter-10);
   };
   return (
@@ -199,7 +203,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           <span className="text-lg text-gray-700">from {playlistName}</span>
         )}
       </h2>
-      {!guessedAlbum && <GuessButton onStartGame={handlePlayGame} />}
+      {/* {!guessedAlbum && <GuessButton onStartGame={handlePlayGame} />} */}
       {guessedAlbum && (
         <div className="mt-4 text-2xl text-green-500">
           Points: {pointCounter}
@@ -242,15 +246,18 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
               />
             </div>
           </div>
+
           {showResult && (
             <ResultModal
-              isCorrectGuess={isCorrectGuess}
-              track={guessedAlbum}
-              handleNextTrack={handleNextTrack}
-            />
+            isCorrectGuess={isCorrectGuess}
+            track={guessedAlbum}
+            handleNextTrack={handleNextTrack}
+          />
           )}
+
         </div>
       )}
+    {showSummary && ( <SummaryModal finalScore={pointSummary}/>)}
     </div>
   );
 };
