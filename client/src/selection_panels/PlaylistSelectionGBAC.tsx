@@ -69,6 +69,8 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
     },
   ]);
 
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
   useEffect(() => {
     const fetchImagesForPredefinedPlaylists = async () => {
       const updatedPlaylists = await Promise.all(
@@ -83,6 +85,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         })
       );
       setPlaylists(updatedPlaylists);
+      setImagesLoaded(true);
     };
     fetchImagesForPredefinedPlaylists();
   }, [accessToken]); // Fetch images when accessToken changes
@@ -142,9 +145,14 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           uniqueAlbums[album.id] = album; // Dodaj album do obiektu, jeśli nie istnieje
         }
       });
+
       // Przekształć obiekt unikalnych albumów z powrotem na tablicę
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-      const cutUniqueAlbumsArray = uniqueAlbumsArray.slice(0, 3);
+      // Losuj albumy
+      const shuffledAlbumsArray = uniqueAlbumsArray.sort(
+        () => 0.5 - Math.random()
+      );
+      const cutUniqueAlbumsArray = shuffledAlbumsArray.slice(0, 3);
       const playlistName =
         playlistId === "top" ? "Your Top Songs" : response.data.name;
       console.log(uniqueAlbumsArray);
@@ -158,6 +166,11 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       setLoading(false);
     }
   };
+  if (!imagesLoaded) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray1"></div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
