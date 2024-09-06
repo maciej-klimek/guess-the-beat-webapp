@@ -21,6 +21,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const code = new URLSearchParams(window.location.search).get("code");
 
+  // Handle login and set tokens
   useEffect(() => {
     if (code && !accessToken) {
       axios
@@ -29,29 +30,38 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setAccessToken(res.data.accessToken);
           setRefreshToken(res.data.refreshToken);
           setExpiresIn(Date.now() + res.data.expiresIn * 1000);
-
           window.history.pushState({}, "", "/");
         })
         .catch((error) => {
           console.error("Error during login request", error);
           window.location.href = "/";
         });
-    } else if (accessToken && refreshToken && Date.now() >= expiresIn!) {
-      axios
-        .post("http://localhost:2115/refresh", { refreshToken })
-        .then((res) => {
-          setAccessToken(res.data.accessToken);
-          setExpiresIn(Date.now() + res.data.expiresIn * 1000);
-        })
-        .catch((error) => {
-          console.error("Error during token refresh", error);
-          setAccessToken(null);
-          setRefreshToken(null);
-          setExpiresIn(null);
-          window.location.href = "/";
-        });
     }
-  }, [code, accessToken, expiresIn, refreshToken]);
+  }, [code, accessToken]);
+
+  // Refresh token every 30 seconds for testing
+  useEffect(() => {
+    if (accessToken && refreshToken) {
+      const refreshInterval = setInterval(() => {
+        console.log("Refreshing token");
+        axios
+          .post("http://localhost:2115/refresh", { refreshToken })
+          .then((res) => {
+            setAccessToken(res.data.accessToken);
+            setExpiresIn(Date.now() + res.data.expiresIn * 1000);
+          })
+          .catch((error) => {
+            console.error("Error during token refresh", error);
+            setAccessToken(null);
+            setRefreshToken(null);
+            setExpiresIn(null);
+            window.location.href = "/";
+          });
+      }, 3599999); // refresh time
+
+      return () => clearInterval(refreshInterval); // Clean up the interval on component unmount
+    }
+  }, [accessToken, refreshToken]);
 
   const logout = () => {
     setAccessToken(null);
