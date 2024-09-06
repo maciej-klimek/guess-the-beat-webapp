@@ -23,20 +23,20 @@ const GuessInput: React.FC<GuessInputProps> = ({
   return (
     <div className="flex mt-4 relative">
       <input
-        className="p-2 rounded-lg"
+        className="p-2 rounded-lg bg-gray3 text-center text-neutral-300 placeholder-neutral-600"
         type="text"
         value={inputValue}
         onChange={onInputChange}
         list="albumSuggestions"
-        placeholder="Type an album name..."
+        placeholder="What the title of this album? 🤔"
       />
       {inputValue.length > 0 && pickedAlbum === 0 && (
-        <ul className="absolute bg-white w-full mt-12 rounded-lg border border-gray-300 shadow-md max-h-48 overflow-y-auto">
+        <ul className="absolute list-none p-2 mt-12 w-full overflow-y-auto bg-gray3 max-h-44 rounded-xl">
           {albumSuggestions.map((album) => (
             <li
               key={album.id}
               onClick={() => onSelectAlbum(album)}
-              className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
+              className="flex items-center p-2 cursor-pointer hover:bg-blue-300 rounded-xl"
             >
               <img
                 src={

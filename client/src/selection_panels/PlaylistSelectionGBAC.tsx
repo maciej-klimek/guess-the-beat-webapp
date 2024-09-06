@@ -20,6 +20,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([
     {
       id: "top",
@@ -74,7 +75,6 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       const updatedPlaylists = await Promise.all(
         playlists.map(async (playlist) => {
           if (playlist.imageUrl) {
-            // If imageUrl is already provided (for 'top' playlist), use it directly
             return playlist;
           } else {
             const imageUrl = await fetchPlaylistImage(playlist);
@@ -83,9 +83,10 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         })
       );
       setPlaylists(updatedPlaylists);
+      setImagesLoaded(true); // Gdy wszystkie obrazy zostaną załadowane, ustawiamy na true
     };
     fetchImagesForPredefinedPlaylists();
-  }, [accessToken]); // Fetch images when accessToken changes
+  }, [accessToken]);
 
   const fetchPlaylistImage = async (playlist: Playlist) => {
     try {
@@ -136,18 +137,19 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
               genres: item.track.album.genres,
             }));
 
-      // Dodaj unikalne albumy do obiektu
       albums.forEach((album) => {
         if (!uniqueAlbums[album.id]) {
-          uniqueAlbums[album.id] = album; // Dodaj album do obiektu, jeśli nie istnieje
+          uniqueAlbums[album.id] = album;
         }
       });
-      // Przekształć obiekt unikalnych albumów z powrotem na tablicę
+
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-      const cutUniqueAlbumsArray = uniqueAlbumsArray.slice(0, 3);
+      const shuffledAlbumsArray = uniqueAlbumsArray.sort(
+        () => 0.5 - Math.random()
+      );
+      const cutUniqueAlbumsArray = shuffledAlbumsArray.slice(0, 3);
       const playlistName =
         playlistId === "top" ? "Your Top Songs" : response.data.name;
-      console.log(uniqueAlbumsArray);
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { tracks: cutUniqueAlbumsArray, playlistName },
       });
@@ -164,34 +166,38 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       <div className="absolute top-8 left-8">
         <Link
           to="/"
-          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
         >
           <FaArrowLeft className="text-xl" />
         </Link>
       </div>
       <h2 className="text-4xl md:text-5xl mt-8">Select a playlist</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12 max-w-4xl bg-gray2 p-8 rounded-2xl">
-        {playlists.map((playlist) => (
-          <button
-            key={playlist.id}
-            onClick={() => fetchAlbums(playlist.id, playlist.url)}
-            className="relative overflow-hidden rounded-lg shadow-lg bg-gray-800 text-white text-xl flex items-center justify-center transform hover:scale-105 transition duration-300 ease-in-out"
-            style={{
-              backgroundImage: `url(${playlist.imageUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              height: "150px",
-              width: "150px",
-            }}
-          >
-            <div className="absolute inset-0"></div>
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
-              <p className="text-lg">{playlist.name}</p>
-            </div>
-          </button>
-        ))}
-      </div>
+      {imagesLoaded ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12 max-w-4xl bg-gray2 p-8 rounded-2xl">
+          {playlists.map((playlist) => (
+            <button
+              key={playlist.id}
+              onClick={() => fetchAlbums(playlist.id, playlist.url)}
+              className="relative overflow-hidden rounded-lg shadow-lg bg-gray-800 text-white text-xl flex items-center justify-center transform hover:scale-105 transition duration-300 ease-in-out"
+              style={{
+                backgroundImage: `url(${playlist.imageUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                height: "150px",
+                width: "150px",
+              }}
+            >
+              <div className="absolute inset-0"></div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
+                <p className="text-lg">{playlist.name}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 mt-12">Ładowanie playlist...</p>
+      )}
 
       {loading && (
         <p className="text-gray-500 absolute bottom-12">Loading...</p>
