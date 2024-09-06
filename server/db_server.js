@@ -83,9 +83,6 @@ router.get("/get-ranking", (req, res) => {
     const params = {
         TableName: 'UsersTable',
         ProjectionExpression: 'User_Id, DisplayName, Score',
-        Limit: 10,
-        ScanIndexForward: false,
-        IndexName: 'ScoreIndex'
     };
 
     dynamoDB.scan(params, (err, data) => {
@@ -93,9 +90,11 @@ router.get("/get-ranking", (req, res) => {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
             res.sendStatus(500);
         } else {
+            const sortedData = data.Items.sort((a, b) => b.Score - a.Score).slice(0, 10);
+
             res.json({
                 message: 'Ranking fetched successfully',
-                data: data.Items,
+                data: sortedData,
             });
         }
     });
