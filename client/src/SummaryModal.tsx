@@ -72,7 +72,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
         {/* Play Again button */}
         <button
           onClick={handleNewGame}
-          className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md shadow-md"
+          className="mt-4 px-4 py-2 mr-2 ml-2 bg-green-500 text-white rounded-md shadow-md"
         >
           Play Again?
         </button>
@@ -80,7 +80,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
         {/* Main Menu button */}
         <button
           onClick={handleMenuExit}
-          className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md shadow-md"
+          className="mt-4 px-4 py-2 mr-2 ml-2 bg-green-500 text-white rounded-md shadow-md"
         >
           Main Menu
         </button>
