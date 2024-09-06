@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import TrackGuesser from "./TrackGuesser";
 import { FaArrowRight } from "react-icons/fa";
 import HintButton from "../misc/HintButton";
+import SummaryModal from "../SummaryModal"; // Import the summary modal
 
 interface GuessByListeningProps {
   accessToken: string;
@@ -19,23 +20,37 @@ interface Track {
 const GuessByListening: React.FC<GuessByListeningProps> = () => {
   const location = useLocation();
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+  const [trackQueue, setTrackQueue] = useState<Track[]>([]);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [showSummary, setGameFinished] = useState(false); // To trigger SummaryModal
+  const [avaliavlePoints, setAvaliavlePoints] = useState(100);
+  const [totalPoints, setTotalPoints] = useState(0); // Track total points
+
   const tracks: Track[] = location.state?.tracks || [];
   const playlistName: string | undefined = location.state?.playlistName;
-  const [avaliavlePoints, setAvaliavlePoints] = useState(100);
 
   useEffect(() => {
-    chooseRandomTrack(tracks);
+    chooseRandomTracks(tracks);
   }, [tracks]);
 
-  const chooseRandomTrack = (tracks: Track[]) => {
-    const randomIndex = Math.floor(Math.random() * tracks.length);
-    setSelectedTrack(tracks[randomIndex]);
-    setTimeout(() => {}, 1000);
+  const chooseRandomTracks = (tracks: Track[]) => {
+    const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5); // Shuffle tracks
+    const selectedTracks = shuffledTracks.slice(0, 3); // Select 10 random tracks
+    setTrackQueue(selectedTracks);
+    setSelectedTrack(selectedTracks[0]); // Set the first track
   };
 
   const handleNextTrack = () => {
-    chooseRandomTrack(tracks);
-    setAvaliavlePoints(100);
+    // Accumulate points
+    setTotalPoints((prev) => prev + avaliavlePoints);
+
+    if (currentTrackIndex + 1 < trackQueue.length) {
+      setCurrentTrackIndex(currentTrackIndex + 1);
+      setSelectedTrack(trackQueue[currentTrackIndex + 1]);
+      setAvaliavlePoints(100);
+    } else {
+      setGameFinished(true); // End the game after the selected tracks
+    }
   };
 
   const handleDateClick = () => {
@@ -117,6 +132,15 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
           </div>
         </div>
       </div>
+
+      {/* Summary Modal */}
+      {showSummary && (
+        <SummaryModal
+          finalScore={totalPoints}
+          guessQueue={trackQueue}
+          mode="GBL"
+        />
+      )}
     </div>
   );
 };

@@ -95,6 +95,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({
     setPlaybackDuration(2);
     setRefreshKey((prev) => prev + 1);
     setIsSuggestionsLocked(false);
+    setShowSuggestions(false);
     onNextTrack();
   };
 

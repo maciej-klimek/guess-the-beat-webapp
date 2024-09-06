@@ -9,7 +9,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import UserDataManager from "../UserDataManager";
 import HintButton from "../misc/HintButton";
 import { normalizeTitle } from "../misc/normalizeTitle";
-import SummaryModal from "./SummaryModal";
+import SummaryModal from "../SummaryModal";
 
 interface GuessByAlbumCoverProps {
   accessToken: string;
@@ -42,6 +42,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [showSummary, setShowSummary] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [userData, setUserData] = useState<any>(null); // State to store user data
+  const [albumQueue, setAlbumQueue] = useState<Album[]>([]); // New state to track album queue
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -93,6 +94,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       const randomIndex = getRandomInt(0, albums.length - 1);
       const selectedAlbum = albums[randomIndex];
       setGuessedAlbum(selectedAlbum);
+      setAlbumQueue((prevQueue) => [...prevQueue, selectedAlbum]); // Add to albumQueue
       albums.splice(randomIndex, 1);
     } else {
       setShowSummary(true);
@@ -161,15 +163,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setShowResult(true);
       setPointSummary(pointSummary + pointCounter);
       const newScore = (userData.score ?? 0) + pointCounter;
-      //console.log("Trying to update score")
       await UserDataManager.updateUserScore(
         userData.id,
         userData.display_name,
         newScore
       );
-      console.log("Recevied confirmation");
       setUserData({ ...userData, score: newScore }); // Update local user state
-      //console.log("Updated Score")
     }
   };
 
@@ -178,6 +177,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
     handlePlayGame();
   };
+
   const handleDateClick = () => {
     setPointCounter(pointCounter - 10);
   };
@@ -185,12 +185,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const handleArtistClick = () => {
     setPointCounter(pointCounter - 10);
   };
+
   return (
     <div className="h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4 relative">
       <div className="absolute top-8 left-8">
         <Link
           to="/"
-          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
+          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
         >
           <FaArrowLeft className="text-xl" />
         </Link>
@@ -201,7 +202,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           <span className="text-lg text-gray-700">from {playlistName}</span>
         )}
       </h2>
-      {/* {!guessedAlbum && <GuessButton onStartGame={handlePlayGame} />} */}
       {guessedAlbum && (
         <div className="mt-4 text-2xl text-green-500">
           Points: {pointCounter}
@@ -255,7 +255,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           )}
         </div>
       )}
-      {showSummary && <SummaryModal finalScore={pointSummary} />}
+      {showSummary && (
+        <SummaryModal
+          finalScore={pointSummary}
+          guessQueue={albumQueue}
+          mode="BGAC"
+        />
+      )}
     </div>
   );
 };
