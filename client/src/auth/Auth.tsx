@@ -5,6 +5,7 @@ interface AuthContextProps {
   accessToken: string | null;
   refreshToken: string | null;
   expiresIn: number | null;
+  code: string | null;
   logout: () => void;
 }
 
@@ -71,7 +72,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, expiresIn, logout }}
+      value={{ accessToken, refreshToken, expiresIn, code, logout }}
     >
       {children}
     </AuthContext.Provider>

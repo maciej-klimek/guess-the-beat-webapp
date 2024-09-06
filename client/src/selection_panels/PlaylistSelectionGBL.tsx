@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaArrowRight } from "react-icons/fa";
+import Loading from "../misc/Loading";
 
 interface Playlist {
   id: string;
@@ -168,9 +169,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray1 text-green-500 text-center">
       {!imagesLoaded ? ( // Show loading animation while images are not loaded
-        <div className="flex justify-center items-center">
-          <div className="w-20 h-20 border-8 border-t-8 border-t-green-500 border-neutral-700 rounded-full animate-spin"></div>{" "}
-        </div>
+        <Loading></Loading>
       ) : (
         <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
           <div className="absolute top-8 right-8">

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GuessByListening from "./guess_by_listening/GuessByListening";
 import GuessByAlbumCover from "./guess_by_album_cover/GuessByAlbumCover";
 import Login from "./auth/Login";
+import Loading from "./misc/Loading";
 import { AuthProvider, useAuth } from "./auth/Auth";
 import Home from "./Home";
 import YourTopSongs from "./YourTopSongs";
@@ -22,12 +23,18 @@ const App: React.FC = () => {
 };
 
 const AppRoutes: React.FC = () => {
-  const { accessToken } = useAuth();
+  const { accessToken, code } = useAuth();
 
-  if (!accessToken) {
+  if (!accessToken && !code) {
     return (
       <Routes>
         <Route path="*" element={<Login />} />
+      </Routes>
+    );
+  } else if (!accessToken) {
+    return (
+      <Routes>
+        <Route path="*" element={<Loading />} />
       </Routes>
     );
   }

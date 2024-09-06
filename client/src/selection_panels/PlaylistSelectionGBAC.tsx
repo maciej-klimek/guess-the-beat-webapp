@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaArrowLeft } from "react-icons/fa";
+import Loading from "../misc/Loading";
 
 interface Playlist {
   id: string;
@@ -198,9 +199,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           </div>
         </>
       ) : (
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="w-20 h-20 border-8 border-t-8 border-t-green-500 border-neutral-700 rounded-full animate-spin"></div>
-        </div>
+        <Loading></Loading>
       )}
 
       {loading && (
