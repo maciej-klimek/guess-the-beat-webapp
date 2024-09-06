@@ -49,7 +49,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
   }, [userData, score]);
   console.log(score);
   return (
-    <div className="relative h-screen text-green-500 text-center bg-gray1 poppins-semibold flex flex-col">
+    <div className="relative h-screen text-green-500 text-center gradient poppins-semibold flex flex-col">
       <Settings userScore={score} userImage={userData?.image} />
       <div className="flex-grow flex items-center justify-center">
         <div>

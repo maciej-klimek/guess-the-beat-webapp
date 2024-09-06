@@ -129,3 +129,21 @@
 .text-gray3 {
   color: #2a2a2a;
 }
+
+body {
+  background: linear-gradient(-45deg, #0c0c0c, #1b1b1b);
+  background-size: 400% 400%;
+  animation: gradient 60s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

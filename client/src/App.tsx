@@ -5,9 +5,9 @@ import GuessByAlbumCover from "./guess_by_album_cover/GuessByAlbumCover";
 import Login from "./auth/Login";
 import { AuthProvider, useAuth } from "./auth/Auth";
 import Home from "./Home";
-import YourTopSongs from "./misc/YourTopSongs";
+import YourTopSongs from "./YourTopSongs";
 import Logout from "./auth/Logout";
-import Ranking from "./misc/Ranking";
+import Ranking from "./Ranking";
 import PlaylistSelectionGBL from "./selection_panels/PlaylistSelectionGBL";
 import PlaylistSelectionGBAC from "./selection_panels/PlaylistSelectionGBAC";
 
@@ -36,13 +36,28 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/" element={<Home accessToken={accessToken} />} />
 
-      <Route path="/guess-by-listening" element={<PlaylistSelectionGBL accessToken={accessToken} />} />
-      <Route path="/guess-by-listening/:playlistId" element={<GuessByListening accessToken={accessToken} />} />
+      <Route
+        path="/guess-by-listening"
+        element={<PlaylistSelectionGBL accessToken={accessToken} />}
+      />
+      <Route
+        path="/guess-by-listening/:playlistId"
+        element={<GuessByListening accessToken={accessToken} />}
+      />
 
-      <Route path="/guess-by-album-cover" element={<PlaylistSelectionGBAC accessToken={accessToken} />} />
-      <Route path="/guess-by-album-cover/:playlistId" element={<GuessByAlbumCover accessToken={accessToken} />} />
+      <Route
+        path="/guess-by-album-cover"
+        element={<PlaylistSelectionGBAC accessToken={accessToken} />}
+      />
+      <Route
+        path="/guess-by-album-cover/:playlistId"
+        element={<GuessByAlbumCover accessToken={accessToken} />}
+      />
 
-      <Route path="/your-top-songs" element={<YourTopSongs accessToken={accessToken} />} />
+      <Route
+        path="/your-top-songs"
+        element={<YourTopSongs accessToken={accessToken} />}
+      />
       <Route path="/ranking" element={<Ranking accessToken={accessToken} />} />
       <Route path="/logout" element={<Logout />} />
     </Routes>

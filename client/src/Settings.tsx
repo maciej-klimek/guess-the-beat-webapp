@@ -12,7 +12,7 @@ const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
     setIsSettingsMenuOpen(!isSettingsMenuOpen);
   };
   return (
-    <div className="absolute top-8 right-8">
+    <div className="absolute top-8 right-8 transition-transform duration-300 ease-in-out transform hover:scale-105">
       <button onClick={toggleSettingsMenu}>
         {userImage && (
           <div className="flex items-center">
