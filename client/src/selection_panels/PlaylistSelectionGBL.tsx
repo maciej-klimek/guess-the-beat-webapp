@@ -49,7 +49,6 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       const updatedPlaylists = await Promise.all(
         playlists.map(async (playlist) => {
           if (playlist.imageUrl) {
-            // If imageUrl is already provided (for 'top' playlist), use it directly
             return playlist;
           } else {
             const imageUrl = await fetchPlaylistImage(playlist);
@@ -58,10 +57,10 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         })
       );
       setPlaylists(updatedPlaylists);
-      setImagesLoaded(true);
+      setImagesLoaded(true); // Mark images as loaded after fetching
     };
     fetchImagesForPredefinedPlaylists();
-  }, [accessToken]); // Fetch images when accessToken changes
+  }, [accessToken]);
 
   const fetchPlaylistImage = async (playlist: Playlist) => {
     try {
@@ -167,93 +166,96 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
-      <div className="absolute top-8 right-8">
-        <Link
-          to="/"
-          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800" // Circular button with center-aligned icon
-        >
-          <FaArrowRight className="text-xl" />{" "}
-          {/* Adjust icon size as needed */}
-        </Link>
-      </div>
-      <h2 className="text-4xl md:text-5xl mt-8 mb-4">Select a playlist</h2>
-
-      <div className="flex justify-center gap-8 mt-12 max-w-4xl">
-        <div className="bg-gray2 p-8 rounded-xl flex flex-col gap-8">
-          {imagesLoaded ? ( // <-- Siatka jest renderowana tylko wtedy, gdy obrazy się załadują
-            playlists.map((playlist) => (
-              <button
-                key={playlist.id}
-                onClick={() => fetchTracks(playlist.id, playlist.url)}
-                className="relative overflow-hidden rounded-lg shadow-lg bg-gray-800 text-white text-xl flex items-center justify-center transform hover:scale-105 transition duration-300 ease-in-out"
-                style={{
-                  backgroundImage: `url(${playlist.imageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  height: "150px",
-                  width: "150px",
-                }}
-              >
-                <div className="absolute inset-0"></div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
-                  <p className="text-lg">{playlist.name}</p>
-                </div>
-              </button>
-            ))
-          ) : (
-            <p>Loading playlists...</p> // <-- Wyświetlamy komunikat podczas ładowania
-          )}
+    <div className="min-h-screen flex justify-center items-center bg-gray1 text-green-500 text-center">
+      {!imagesLoaded ? ( // Show loading animation while images are not loaded
+        <div className="flex justify-center items-center">
+          <div className="w-20 h-20 border-8 border-t-8 border-t-green-500 border-neutral-700 rounded-full animate-spin"></div>{" "}
         </div>
-
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-neutral-500 text-2xl">Or</h1>
-        </div>
-
-        <div className="bg-gray2 p-8 rounded-xl flex flex-col items-center">
-          <form className="flex items-center mb-4">
-            <input
-              type="text"
-              value={playlistUrl}
-              onChange={handlePaste}
-              onKeyPress={(e) => {
-                e.key === "Enter" && e.preventDefault();
-              }}
-              placeholder="Paste Spotify playlist URL"
-              className="px-4 py-2 rounded-md bg-gray3 text-neutral-500 focus:outline-none focus:ring-2 focus:ring-green-500 flex-grow"
-            />
-          </form>
-          {submittedPlaylist ? (
-            <div
-              className="mt-20 relative overflow-hidden rounded-lg text-white text-xl flex items-center justify-between transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-              onClick={() =>
-                fetchTracks(submittedPlaylist.id, submittedPlaylist.url)
-              }
-              style={{
-                backgroundImage: `url(${submittedPlaylist.imageUrl})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                height: "250px",
-                width: "250px",
-              }}
+      ) : (
+        <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
+          <div className="absolute top-8 right-8">
+            <Link
+              to="/"
+              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
             >
-              <div className="absolute inset-0"></div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
-                <p className="text-lg">{submittedPlaylist.name}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-20 w-60 h-60 bg-gray3 rounded-lg text-neutral-500 text-6xl flex justify-center items-center">
-              ?
-            </div>
-          )}
-        </div>
-      </div>
+              <FaArrowRight className="text-xl" />
+            </Link>
+          </div>
+          <h2 className="text-4xl md:text-5xl mt-8 mb-4">Select a playlist</h2>
 
-      {loading && (
-        <p className="text-gray-500 absolute bottom-12">Loading...</p>
+          <div className="flex justify-center gap-8 mt-12 max-w-4xl">
+            <div className="bg-gray2 p-8 rounded-xl flex flex-col gap-8">
+              {playlists.map((playlist) => (
+                <button
+                  key={playlist.id}
+                  onClick={() => fetchTracks(playlist.id, playlist.url)}
+                  className="relative overflow-hidden rounded-lg shadow-lg bg-gray-800 text-white text-xl flex items-center justify-center transform hover:scale-105 transition duration-300 ease-in-out"
+                  style={{
+                    backgroundImage: `url(${playlist.imageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    height: "150px",
+                    width: "150px",
+                  }}
+                >
+                  <div className="absolute inset-0"></div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
+                    <p className="text-lg">{playlist.name}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-center justify-center">
+              <h1 className="text-neutral-500 text-2xl">Or</h1>
+            </div>
+
+            <div className="bg-gray2 p-8 rounded-xl flex flex-col items-center">
+              <form className="flex items-center mb-4">
+                <input
+                  type="text"
+                  value={playlistUrl}
+                  onChange={handlePaste}
+                  onKeyPress={(e) => {
+                    e.key === "Enter" && e.preventDefault();
+                  }}
+                  placeholder="Paste Spotify playlist URL"
+                  className="px-4 py-2 rounded-md bg-gray3 text-neutral-500 focus:outline-none focus:ring-2 focus:ring-green-500 flex-grow"
+                />
+              </form>
+              {submittedPlaylist ? (
+                <div
+                  className="mt-20 relative overflow-hidden rounded-lg text-white text-xl flex items-center justify-between transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  onClick={() =>
+                    fetchTracks(submittedPlaylist.id, submittedPlaylist.url)
+                  }
+                  style={{
+                    backgroundImage: `url(${submittedPlaylist.imageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    height: "250px",
+                    width: "250px",
+                  }}
+                >
+                  <div className="absolute inset-0"></div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 hover:opacity-100 hover:bg-opacity-20 transition-all duration-300">
+                    <p className="text-lg">{submittedPlaylist.name}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-20 w-60 h-60 bg-gray3 rounded-lg text-neutral-500 text-6xl flex justify-center items-center">
+                  ?
+                </div>
+              )}
+            </div>
+          </div>
+
+          {loading && (
+            <p className="text-gray-500 absolute bottom-12">Loading...</p>
+          )}
+          {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
+        </div>
       )}
-      {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
     </div>
   );
 };

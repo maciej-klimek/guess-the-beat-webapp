@@ -20,12 +20,6 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
   const [userData, setUserData] = useState<User | null>(null);
   const [score, setScore] = useState<number | null>(null);
 
-  const navigate = useNavigate();
-
-  const handleRankingClick = () => {
-    navigate("/ranking");
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       const user = await UserDataManager.fetchUserData(accessToken);
@@ -67,10 +61,7 @@ const Home: React.FC<HomeProps> = ({ accessToken }) => {
                   <ByListeningPanel />
                 </Link>
               </div>
-              <div>
-            <h1>Welcome to the Game</h1>
-            <button onClick={handleRankingClick}>View Ranking</button>
-        </div>
+              <div></div>
               <div className="flex-1 ml-20">
                 <Link to="/guess-by-album-cover">
                   <ByAlbumCoverPanel />
