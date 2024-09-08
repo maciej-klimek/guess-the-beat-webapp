@@ -37,7 +37,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
               className="flex items-center p-2 cursor-pointer hover:bg-blue-300 rounded-xl"
             >
               {/* Album image */}
-              <img
+              {/* <img
                 src={
                   album.images[0]
                     ? album.images[0].url
@@ -45,7 +45,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
                 }
                 alt="Album Cover"
                 className="h-10 w-10 mr-3 rounded-md"
-              />
+              /> */}
               {/* Album name */}
               <div className="flex flex-col">
                 <p className="font-semibold text-left text-sm text-blue-500">
