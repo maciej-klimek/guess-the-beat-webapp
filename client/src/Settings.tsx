@@ -20,7 +20,7 @@ const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
             <div className="text-sm text-neutral-700">You currently have</div>
             <div className="text-xl">{userScore} points!</div>
           </div>
-          <img src={userImage || "user_icon.png"} alt="User" className="w-12 h-12 rounded-full" />
+          <img src={userImage || "user_icon.jpg"} alt="User" className="w-12 h-12 rounded-full" />
         </div>
       </button>
       {isSettingsMenuOpen && (
