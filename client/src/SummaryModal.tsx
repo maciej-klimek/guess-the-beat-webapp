@@ -6,13 +6,17 @@ interface SummaryModalProps {
   guessQueue: {
     name: string | null;
     artists: { name: string }[];
-    album?: { images: { url: string }[] }; // Make album optional for GBL
+    album?: { images: { url: string }[] };
     images?: { url: string }[];
   }[];
   mode: "GBL" | "BGAC"; // Mode variable to differentiate between GuessByListening and GuessByAlbumCover
 }
 
-const SummaryModal: React.FC<SummaryModalProps> = ({ finalScore, guessQueue, mode }) => {
+const SummaryModal: React.FC<SummaryModalProps> = ({
+  finalScore,
+  guessQueue,
+  mode,
+}) => {
   const navigate = useNavigate();
 
   const handleNewGame = () => {
@@ -33,7 +37,11 @@ const SummaryModal: React.FC<SummaryModalProps> = ({ finalScore, guessQueue, mod
         {/* Left Section */}
         <div className="flex flex-col justify-center items-center bg-gray-100 p-6 w-1/2 rounded-xl mr-8">
           <div className="text-3xl text-gray-700 mb-2">You scored</div>
-          <div className={`text-4xl mb-2 ${finalScore < 0 ? "text-red-500" : "text-green-500"}`}>
+          <div
+            className={`text-4xl mb-2 ${
+              finalScore < 0 ? "text-red-500" : "text-green-500"
+            }`}
+          >
             {finalScore} Points
           </div>
           <div className="text-3xl text-gray-700">in total</div>
@@ -64,14 +72,31 @@ const SummaryModal: React.FC<SummaryModalProps> = ({ finalScore, guessQueue, mod
           <div className="h-80 overflow-y-auto">
             <ul className="list-none p-0 m-0">
               {guessQueue.map((item, index) => (
-                <li key={index} className="flex items-center p-4 mb-2 bg-white rounded-lg shadow-sm">
+                <li
+                  key={index}
+                  className="flex items-center p-4 mb-2 bg-white rounded-lg shadow-sm"
+                >
                   {/* Check for images and album presence */}
-                  {item.album && item.album.images && item.album.images[0]?.url && (
-                    <img src={item.album.images[0].url} alt={item.name ?? ""} className="w-16 h-16 mr-4 rounded-md" />
+                  {item.album &&
+                    item.album.images &&
+                    item.album.images[0]?.url && (
+                      <img
+                        src={item.album.images[0].url}
+                        alt={item.name ?? ""}
+                        className="w-16 h-16 mr-4 rounded-md"
+                      />
+                    )}
+                  {item.images && (
+                    <img
+                      src={item.images[0].url}
+                      alt={item.name ?? ""}
+                      className="w-16 h-16 mr-4"
+                    />
                   )}
-                  {item.images && <img src={item.images[0].url} alt={item.name ?? ""} className="w-16 h-16 mr-4" />}
                   <div className="flex flex-col text-left">
-                    <span className="font-semibold text-gray-700">{item.name}</span>
+                    <span className="font-semibold text-gray-700">
+                      {item.name}
+                    </span>
                     <span className="text-sm text-gray-500">
                       {item.artists.map((artist) => artist.name).join(", ")}
                     </span>
