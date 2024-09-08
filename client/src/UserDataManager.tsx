@@ -9,7 +9,11 @@ interface User {
 
 interface UserDataManager {
   fetchUserData: (accessToken: string | null) => Promise<User | null>;
-  updateUserScore: (userId: string, displayName: string, score: number | null) => Promise<void>;
+  updateUserScore: (
+    userId: string,
+    displayName: string,
+    score: number | null
+  ) => Promise<void>;
 }
 
 const UserDataManager: UserDataManager = {
@@ -21,23 +25,29 @@ const UserDataManager: UserDataManager = {
 
     try {
       // Fetch user data from Spotify
-      const spotifyUserResponse = await axios.get("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const spotifyUserResponse = await axios.get(
+        "https://api.spotify.com/v1/me",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       const user = spotifyUserResponse.data;
 
       // Fetch user score from your database server
-      const databaseServerResponseScore = await axios.post("http://localhost:2115/get-user-data", {
-        User_Id: user.id,
-      });
+      const databaseServerResponseScore = await axios.post(
+        "http://localhost:2115/get-user-data",
+        {
+          User_Id: user.id,
+        }
+      );
 
       const score = databaseServerResponseScore.data.data.Score;
 
-      // Extract user's profile image URL
-      const image = user.images && user.images.length > 0 ? user.images[0].url : null;
+      const image =
+        user.images && user.images.length > 0 ? user.images[0].url : null;
 
       return {
         display_name: user.display_name,
@@ -58,12 +68,14 @@ const UserDataManager: UserDataManager = {
     }
 
     try {
-      // Update user score on your database server
-      const databaseServerResponse = await axios.post("http://localhost:2115/store-user-data", {
-        User_Id: userId,
-        DisplayName: displayName,
-        Score: score,
-      });
+      const databaseServerResponse = await axios.post(
+        "http://localhost:2115/store-user-data",
+        {
+          User_Id: userId,
+          DisplayName: displayName,
+          Score: score,
+        }
+      );
       console.log("Score updated on server:", databaseServerResponse.data);
     } catch (error) {
       console.error("Error updating score on server: ", error);

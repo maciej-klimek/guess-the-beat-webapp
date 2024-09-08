@@ -18,7 +18,6 @@ const HintButton: React.FC<ChangeTextButtonProps> = ({
   const [buttonText, setButtonText] = useState<string>(labelText);
   const [isChanged, setIsChanged] = useState<boolean>(false);
 
-  // Handle button click
   const handleClick = () => {
     setButtonText(newText);
     setIsChanged(true);

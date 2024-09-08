@@ -7,7 +7,12 @@ interface PlaybackBarProps {
   addSegmentsKey: number;
 }
 
-const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, refreshKey, addSegmentsKey }) => {
+const PlaybackBar: React.FC<PlaybackBarProps> = ({
+  playbackDuration,
+  isPlaying,
+  refreshKey,
+  addSegmentsKey,
+}) => {
   const [heights, setHeights] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState(playbackDuration);
 
@@ -20,20 +25,19 @@ const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, 
     return heightsArray;
   };
 
-  // Initialize or reset the heights when playbackDuration or refreshKey changes
   useEffect(() => {
-    setHeights(generateRandomHeights(20, 100, 36)); // Initial 36 segments
+    setHeights(generateRandomHeights(20, 100, 36));
   }, [refreshKey]);
 
-  // Append new segments when addSegmentsKey changes
   useEffect(() => {
     setHeights((prevHeights) => [
-      ...prevHeights.filter((_, index) => ((index + 1) % 10) / playbackDuration !== 0), // Remove every 3rd segment
+      ...prevHeights.filter(
+        (_, index) => ((index + 1) % 10) / playbackDuration !== 0
+      ),
       ...generateRandomHeights(20, 100, 5), // Add 5 new segments
     ]);
   }, [addSegmentsKey]);
 
-  // Animation effect for segment progress
   useEffect(() => {
     let animationFrameId: number;
     let startTime: number;
@@ -71,7 +75,9 @@ const PlaybackBar: React.FC<PlaybackBarProps> = ({ playbackDuration, isPlaying, 
       {heights.map((height, index) => (
         <div
           key={index}
-          className={`flex-1 ${index < activeSegments ? "bg-green-500" : "bg-neutral-400"} rounded`}
+          className={`flex-1 ${
+            index < activeSegments ? "bg-green-500" : "bg-neutral-400"
+          } rounded`}
           style={{ height: `${height}%`, margin: "0 1px" }}
         />
       ))}

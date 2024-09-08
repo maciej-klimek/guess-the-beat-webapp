@@ -33,7 +33,10 @@ const Ranking: React.FC<RankingProps> = ({ accessToken }) => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-green-500 bg-gray1 poppins-semibold p-4">
       <div className="absolute top-6 right-4">
-        <Link to="/" className="text-white bg-gray2 p-2 rounded hover:bg-gray-3 transition">
+        <Link
+          to="/"
+          className="text-white bg-gray2 p-2 rounded hover:bg-gray-3 transition"
+        >
           Home
         </Link>
       </div>
@@ -48,7 +51,10 @@ const Ranking: React.FC<RankingProps> = ({ accessToken }) => {
         </thead>
         <tbody>
           {scores.map((user, index) => (
-            <tr key={user.User_Id} className={index % 2 === 0 ? "bg-neutral-800" : "bg-gray1"}>
+            <tr
+              key={user.User_Id}
+              className={index % 2 === 0 ? "bg-neutral-800" : "bg-gray1"}
+            >
               <td className="px-4 py-2 text-white">{index + 1}</td>
               <td className="px-4 py-2 flex items-center justify-left text-neutral-300">
                 {user.DisplayName}

@@ -7,7 +7,10 @@ interface SuggestedSongListProps {
   onSongSelect: (song: { id: string; name: string }) => void;
 }
 
-const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSongSelect }) => {
+const SuggestedSongList: React.FC<SuggestedSongListProps> = ({
+  inputValue,
+  onSongSelect,
+}) => {
   const [songSuggestions, setSongSuggestions] = useState<
     {
       id: string;
@@ -33,12 +36,16 @@ const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSon
             >
               {/* Display the album image */}
               <img
-                src={song.album.images[0]?.url || "https://via.placeholder.com/50"} // Placeholder image if no album image is available
+                src={
+                  song.album.images[0]?.url || "https://via.placeholder.com/50"
+                }
                 alt={song.name}
                 className="w-10 h-10 mr-3 rounded-md"
               />
               <div className="flex flex-col">
-                <p className="font-semibold text-left text-sm text-blue-500">{song.name}</p>
+                <p className="font-semibold text-left text-sm text-blue-500">
+                  {song.name}
+                </p>
                 <p className="text-neutral-700 text-left text-sm">
                   {song.artists.map((artist) => artist.name).join(", ")}
                 </p>
@@ -47,7 +54,9 @@ const SuggestedSongList: React.FC<SuggestedSongListProps> = ({ inputValue, onSon
           ))}
         </ul>
       ) : (
-        <p className="p-2 text-neutral-700">Type something to see suggestions</p>
+        <p className="p-2 text-neutral-700">
+          Type something to see suggestions
+        </p>
       )}
     </div>
   );

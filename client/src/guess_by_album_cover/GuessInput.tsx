@@ -18,7 +18,7 @@ const GuessInput: React.FC<GuessInputProps> = ({
   onSelectAlbum,
   pickedAlbum,
 }) => {
-  console.log("Album suggestions:", albumSuggestions); // Debugging log
+  //console.log("Album suggestions:", albumSuggestions);
 
   return (
     <div className="flex mt-4 relative">
@@ -40,16 +40,24 @@ const GuessInput: React.FC<GuessInputProps> = ({
             >
               {/* Album image */}
               <img
-                src={album.images[0] ? album.images[0].url : "https://via.placeholder.com/50"}
+                src={
+                  album.images[0]
+                    ? album.images[0].url
+                    : "https://via.placeholder.com/50"
+                }
                 alt="Album Cover"
                 className="h-10 w-10 mr-3 rounded-md"
               />
               {/* Album name */}
               <div className="flex flex-col">
-                <p className="font-semibold text-left text-sm text-blue-500">{album.name}</p>
+                <p className="font-semibold text-left text-sm text-blue-500">
+                  {album.name}
+                </p>
                 <p className="text-neutral-700 text-left text-sm">
                   {/* Assuming artist names are available similarly */}
-                  {album.artists.map((artist: { name: string }) => artist.name).join(", ")}
+                  {album.artists
+                    .map((artist: { name: string }) => artist.name)
+                    .join(", ")}
                 </p>
               </div>
             </li>
