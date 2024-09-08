@@ -152,10 +152,10 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
 
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
       const shuffledAlbumsArray = uniqueAlbumsArray.sort(() => 0.5 - Math.random());
-      const cutUniqueAlbumsArray = shuffledAlbumsArray.slice(0, 10);
+      const selectedAlbums = shuffledAlbumsArray.slice(0, 3);
       const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
       navigate(`/guess-by-album-cover/${playlistId}`, {
-        state: { tracks: cutUniqueAlbumsArray, playlistName },
+        state: { albums: selectedAlbums, playlistName },
       });
     } catch (error) {
       console.error("Error fetching tracks:", error);
