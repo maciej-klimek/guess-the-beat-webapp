@@ -82,21 +82,36 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
   const fetchTracks = async (playlistId: string, url: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(url, {
+      // Get the total number of tracks in the playlist
+      const playlistResponse = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const totalTracks = playlistId === "top" ? playlistResponse.data.total : playlistResponse.data.tracks.total;
+
+      // Calculate random offset (must be a multiple of 50, and within the total track count)
+      const maxOffset = Math.max(totalTracks - 50, 0);
+      const randomOffset = Math.floor(Math.random() * (maxOffset / 50)) * 50;
+
+      const tracksResponse = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
           limit: 50,
+          offset: randomOffset, // Use the random offset here
         },
       });
 
       const tracks =
         playlistId === "top"
-          ? response.data.items
-          : response.data.tracks.items.map((item: any) => item.track);
-      const playlistName =
-        playlistId === "top" ? "Your Top Songs" : response.data.name;
+          ? tracksResponse.data.items
+          : tracksResponse.data.tracks.items.map((item: any) => item.track);
+
+      const playlistName = playlistId === "top" ? "Your Top Songs" : playlistResponse.data.name;
+
 
       console.log(tracks);
 
