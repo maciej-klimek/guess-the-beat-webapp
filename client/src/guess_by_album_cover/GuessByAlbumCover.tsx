@@ -33,15 +33,14 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [failsCount, setFailsCount] = useState(0);
   const [albumSuggestionsArray, setAlbumSuggestions] = useState<Album[]>([]);
-  const [pickedAlbum, setPickedAlbum] = useState(0);
-  const [pointCounter, setPointCounter] = useState(100);
+  const [pointCount, setPointCount] = useState(100);
   const [pointSummary, setPointSummary] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [userData, setUserData] = useState<any>(null); // State to store user data
   const [albumQueue, setAlbumQueue] = useState<Album[]>([]); // New state to track album queue
-  const [totalPointsDeducted, setTotalPointsDeducted] = useState(0); // New state to track total points deducted
+  //const [totalPointsDeducted, setTotalPointsDeducted] = useState(0); // New state to track total points deducted
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,7 +51,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
     };
 
     fetchUserData();
-    handlePlayGame();
+    handleNextAlbum();
   }, [accessToken]);
 
   useEffect(() => {
@@ -84,8 +83,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
     fetchAlbumSuggestions();
   }, [inputValue, accessToken]);
 
-  const handlePlayGame = () => {
-    resetGame();
+  const handleNextAlbum = () => {
+    setVisiblePanelsArray([]);
+    setInputValue("");
+    setFailsCount(0);
+    setPointCount(100);
+    setShowResult(false);
+    setIsCorrectGuess(false);
     if (albums.length > 0) {
       const randomIndex = getRandomInt(0, albums.length - 1);
       const selectedAlbum = albums[randomIndex];
@@ -94,22 +98,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
       albums.splice(randomIndex, 1);
     } else {
       setShowSummary(true);
-      console.warn("No albums found in the selected playlist");
+      //console.warn("No albums found in the selected playlist");
     }
   };
 
   const getRandomInt = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const resetGame = () => {
-    setVisiblePanelsArray([]);
-    setInputValue("");
-    setSelectedAlbum(null);
-    setFailsCount(0);
-    setPointCounter(100);
-    setShowResult(false);
-    setIsCorrectGuess(false);
   };
 
   const removeBlur = async () => {
@@ -122,14 +116,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
         const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
         setVisiblePanelsArray((prev) => [...prev, randomIndex]);
         setFailsCount((prev) => prev + 1);
-        setPickedAlbum(0);
-        setPointCounter((prev) => prev - 20);
+        setPointCount((prev) => prev - 20);
 
-        if (failsCount + 1 >= 4) {
-          setPickedAlbum(0);
+        if (failsCount >= 4) {
           setInputValue("");
-          setPointCounter(-50);
-          setTotalPointsDeducted((prev) => prev + 50); // Add to total points deducted
+          setPointCount(-50);
+          //setTotalPointsDeducted((prev) => prev + 50); // Add to total points deducted
           setIsCorrectGuess(false);
           setShowResult(true);
           setPointSummary((prev) => prev - 50); // Deduct 50 points for a loss
@@ -154,7 +146,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
     setInputValue(selectedAlbum.name ?? "");
-    setPickedAlbum(0);
     setAlbumSuggestions([]);
   };
 
@@ -165,29 +156,23 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
       setInputValue("");
     } else {
       setIsCorrectGuess(true);
-      setPickedAlbum(0);
       setInputValue("");
       setShowResult(true);
-      setPointSummary((prev) => prev + pointCounter);
-      if (userData) {
-        const newScore = (userData.score ?? 0) + pointCounter;
-        await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
-        setUserData((prev) => ({ ...prev, score: newScore }));
-      }
+      setPointSummary((prev) => prev + pointCount);
+      // if (userData) {
+      //   const newScore = (userData.score ?? 0) + pointCount;
+      //   await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
+      //   setUserData((prev) => ({ ...prev, score: newScore }));
+      // }
     }
   };
 
-  const handleNextTrack = () => {
-    setShowResult(false);
-    handlePlayGame();
-  };
-
   const handleDateClick = () => {
-    setPointCounter((prev) => prev - 10);
+    setPointCount((prev) => prev - 10);
   };
 
   const handleArtistClick = () => {
-    setPointCounter((prev) => prev - 10);
+    setPointCount((prev) => prev - 10);
   };
 
   return (
@@ -208,7 +193,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
           <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
-          <span style={{ color: `hsl(${(pointCounter / 100) * 137}, 63%, 56%)` }}>{pointCounter}/100</span>
+          <span style={{ color: `hsl(${(pointCount / 100) * 137}, 63%, 56%)` }}>{pointCount}/100</span>
         </div>
 
         {/* Album Cover & Guess Input */}
@@ -224,15 +209,15 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) =>
               onSubmit={handleCheckAnswer}
               albumSuggestions={albumSuggestionsArray}
               onSelectAlbum={handleAlbumSelection}
-              pickedAlbum={pickedAlbum}
+              pickedAlbum={0}
             />
 
             {showResult && (
               <ResultModal
                 isCorrectGuess={isCorrectGuess}
                 track={selectedAlbum}
-                handleNextTrack={handleNextTrack}
-                availablePoints={pointCounter}
+                handleNextTrack={handleNextAlbum}
+                availablePoints={pointCount}
               />
             )}
           </div>
