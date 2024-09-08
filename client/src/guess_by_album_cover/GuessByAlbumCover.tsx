@@ -98,13 +98,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setFailsCount(0);
     setPointCount(100);
     setShowResult(false);
-    //setIsCorrectGuess(false);
-
     if (albums.length > 0) {
       const randomIndex = getRandomInt(0, albums.length - 1);
       const selectedAlbum = albums[randomIndex];
       setSelectedAlbum(selectedAlbum);
-      setAlbumQueue((prevQueue) => [...prevQueue, selectedAlbum]); // Add to albumQueue
+      setAlbumQueue((prevQueue) => [...prevQueue, selectedAlbum]);
       albums.splice(randomIndex, 1);
     } else {
       setShowSummary(true);
@@ -166,7 +164,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setInputValue("");
       setShowResult(true);
       setPointSummary((prev) => prev + pointCount);
-      // Update the user score only on correct guess
       if (userData) {
         const newScore = (userData.score ?? 0) + pointCount;
         await UserDataManager.updateUserScore(
@@ -237,7 +234,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
                 isCorrectGuess={isCorrectGuess}
                 track={selectedAlbum}
                 handleNextTrack={handleNextAlbum}
-                avaliablePoints={pointCount} // Use avaliablePoints to match the prop name in ResultModal
+                avaliablePoints={pointCount}
               />
             )}
           </div>

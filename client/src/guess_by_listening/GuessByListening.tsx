@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import TrackGuesser from "./TrackGuesser";
 import { FaArrowRight } from "react-icons/fa";
 import HintButton from "../misc/HintButton";
-import SummaryModal from "../SummaryModal"; // Import the summary modal
+import SummaryModal from "../SummaryModal";
 
 interface GuessByListeningProps {
   accessToken: string;
@@ -22,9 +22,9 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [trackQueue, setTrackQueue] = useState<Track[]>([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [showSummary, setGameFinished] = useState(false); // To trigger SummaryModal
+  const [showSummary, setGameFinished] = useState(false);
   const [avaliavlePoints, setAvaliavlePoints] = useState(100);
-  const [totalPoints, setTotalPoints] = useState(0); // Track total points
+  const [totalPoints, setTotalPoints] = useState(0);
 
   const tracks: Track[] = location.state?.tracks || [];
   const playlistName: string | undefined = location.state?.playlistName;
@@ -34,14 +34,13 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
   }, [tracks]);
 
   const chooseRandomTracks = (tracks: Track[]) => {
-    const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5); // Shuffle tracks
-    const selectedTracks = shuffledTracks.slice(0, 10); // Select 10 random tracks
+    const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5);
+    const selectedTracks = shuffledTracks.slice(0, 10);
     setTrackQueue(selectedTracks);
-    setSelectedTrack(selectedTracks[0]); // Set the first track
+    setSelectedTrack(selectedTracks[0]);
   };
 
   const handleNextTrack = () => {
-    // Accumulate points
     setTotalPoints((prev) => prev + avaliavlePoints);
 
     if (currentTrackIndex + 1 < trackQueue.length) {
@@ -49,7 +48,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       setSelectedTrack(trackQueue[currentTrackIndex + 1]);
       setAvaliavlePoints(100);
     } else {
-      setGameFinished(true); // End the game after the selected tracks
+      setGameFinished(true);
     }
   };
 
@@ -73,13 +72,17 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       </div>
       <h2 className="text-4xl md:text-5xl mt-8 mb-12">
         Guess By Listening 🎧 <br />
-        {playlistName && <span className="text-lg text-neutral-700">from {playlistName}</span>}
+        {playlistName && (
+          <span className="text-lg text-neutral-700">from {playlistName}</span>
+        )}
       </h2>
 
       <div className="flex w-full items-center justify-center space-x-28">
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
-          <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
+          <span className="text-sm text-neutral-700 mb-4">
+            Points You can get:
+          </span>
           <span
             style={{
               color: `hsl(${(avaliavlePoints / 100) * 137}, 63%, 56%)`,
@@ -103,7 +106,9 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
 
         {/* Yellow Buttons */}
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
-          <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
+          <h3 className="text-base text-neutral-700 font-semibold mb-4">
+            Need some hints?
+          </h3>
           <div className="flex flex-col space-y-4 w-full">
             <div className="w-full">
               <HintButton
@@ -128,7 +133,13 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       </div>
 
       {/* Summary Modal */}
-      {showSummary && <SummaryModal finalScore={totalPoints} guessQueue={trackQueue} mode="GBL" />}
+      {showSummary && (
+        <SummaryModal
+          finalScore={totalPoints}
+          guessQueue={trackQueue}
+          mode="GBL"
+        />
+      )}
     </div>
   );
 };

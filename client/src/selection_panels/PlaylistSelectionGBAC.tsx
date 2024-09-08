@@ -121,8 +121,20 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+      });
+
+      const totalTracks = playlistId === "top" ? response.data.total : response.data.tracks.total;
+
+      const maxOffset = Math.max(totalTracks - 50, 0);
+      const randomOffset = Math.floor(Math.random() * (maxOffset / 50)) * 50;
+
+      const tracksResponse = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
         params: {
           limit: 50,
+          offset: randomOffset, // Use the random offset here
         },
       });
 
@@ -130,7 +142,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
 
       const albums =
         playlistId === "top"
-          ? response.data.items.map((item: any) => ({
+          ? tracksResponse.data.items.map((item: any) => ({
               id: item.album.id,
               images: item.album.images,
               release_date: item.album.release_date,
@@ -138,7 +150,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
               artists: item.album.artists,
               genres: item.album.genres,
             }))
-          : response.data.tracks.items.map((item: any) => ({
+          : tracksResponse.data.tracks.items.map((item: any) => ({
               id: item.track.album.id,
               images: item.track.album.images,
               release_date: item.track.album.release_date,
@@ -158,14 +170,16 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         () => 0.5 - Math.random()
       );
       const selectedAlbums = shuffledAlbumsArray.slice(0, 3);
+
       const playlistName =
         playlistId === "top" ? "Your Top Songs" : response.data.name;
+
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { albums: selectedAlbums, playlistName },
       });
     } catch (error) {
-      console.error("Error fetching tracks:", error);
-      setError("Error fetching tracks. Please check the URL and try again.");
+      console.error("Error fetching albums:", error);
+      setError("Error fetching albums. Please check the URL and try again.");
     } finally {
       setLoading(false);
     }

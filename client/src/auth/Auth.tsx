@@ -22,7 +22,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const code = new URLSearchParams(window.location.search).get("code");
 
-  // Handle login and set tokens
   useEffect(() => {
     if (code && !accessToken) {
       axios
@@ -40,7 +39,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [code, accessToken]);
 
-  // Refresh token every 30 seconds for testing
   useEffect(() => {
     if (accessToken && refreshToken) {
       const refreshInterval = setInterval(() => {
@@ -58,9 +56,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setExpiresIn(null);
             window.location.href = "/";
           });
-      }, 3599999); // refresh time
+      }, 3599999);
 
-      return () => clearInterval(refreshInterval); // Clean up the interval on component unmount
+      return () => clearInterval(refreshInterval);
     }
   }, [accessToken, refreshToken]);
 

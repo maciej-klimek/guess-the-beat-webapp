@@ -24,7 +24,12 @@ interface TrackGuesserProps {
   setAvaliavlePoints: (avaliablePoints: number) => void;
 }
 
-const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliablePoints, setAvaliavlePoints }) => {
+const TrackGuesser: React.FC<TrackGuesserProps> = ({
+  track,
+  onNextTrack,
+  avaliablePoints,
+  setAvaliavlePoints,
+}) => {
   const [userGuess, setUserGuess] = useState("");
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [remainingChances, setRemainingChances] = useState(5);
@@ -56,7 +61,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
       setShowResult(true);
       if (user) {
         const newScore = (user.score ?? 0) + avaliablePoints;
-        await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
+        await UserDataManager.updateUserScore(
+          user.id,
+          user.display_name,
+          newScore
+        );
         setUser({ ...user, score: newScore });
       }
     } else {
@@ -69,7 +78,11 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
         if (user) {
           setAvaliavlePoints(-50);
           const newScore = (user.score ?? 0) - 50;
-          await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
+          await UserDataManager.updateUserScore(
+            user.id,
+            user.display_name,
+            newScore
+          );
           setUser({ ...user, score: newScore });
         }
       }
@@ -119,7 +132,10 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
       <div className="bg-gray2 p-8 rounded-xl shadow-md mb-4 ">
         <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
         <div className="flex justify-self-center">
-          <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
+          <PlayButton
+            playAudioSegment={playAudioSegment}
+            isPlaying={isPlaying}
+          />
           <PlaybackBar
             playbackDuration={playbackDuration}
             isPlaying={isPlaying}
@@ -136,13 +152,17 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
                 <button
                   onClick={toggleSuggestions}
                   className={`flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 mt-6 ${
-                    isSuggestionsLocked ? "opacity-50 cursor-not-allowed mb-6" : ""
+                    isSuggestionsLocked
+                      ? "opacity-50 cursor-not-allowed mb-6"
+                      : ""
                   }`}
                   disabled={isSuggestionsLocked}
                 >
                   <FaChevronDown className="text-xl" />
                 </button>
-                {!isSuggestionsLocked && <span className="text-red-800 text-xs mt-2">-30</span>}
+                {!isSuggestionsLocked && (
+                  <span className="text-red-800 text-xs mt-2">-30</span>
+                )}
               </div>
             </Tooltip>
 
@@ -159,7 +179,12 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
           </div>
         </div>
 
-        {showSuggestions && <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />}
+        {showSuggestions && (
+          <SuggestedSongList
+            inputValue={userGuess}
+            onSongSelect={handleSongSelect}
+          />
+        )}
       </div>
 
       {showResult && (

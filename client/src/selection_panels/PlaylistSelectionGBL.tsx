@@ -15,13 +15,17 @@ interface PlaylistSelectionProps {
   accessToken: string;
 }
 
-const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) => {
+const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
+  accessToken,
+}) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [error, setError] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [submittedPlaylist, setSubmittedPlaylist] = useState<Playlist | null>(null);
+  const [submittedPlaylist, setSubmittedPlaylist] = useState<Playlist | null>(
+    null
+  );
   const [playlists, setPlaylists] = useState<Playlist[]>([
     {
       id: "top",
@@ -54,7 +58,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
         })
       );
       setPlaylists(updatedPlaylists);
-      setImagesLoaded(true); // Mark images as loaded after fetching
+      setImagesLoaded(true);
     };
     fetchImagesForPredefinedPlaylists();
   }, [accessToken]);
@@ -66,7 +70,8 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl =
+        response.data.images.length > 0 ? response.data.images[0].url : "";
       return playlistImageUrl;
     } catch (error) {
       console.error("Error fetching playlist image:", error);
@@ -77,18 +82,36 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
   const fetchTracks = async (playlistId: string, url: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(url, {
+      // Get the total number of tracks in the playlist
+      const playlistResponse = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const totalTracks = playlistId === "top" ? playlistResponse.data.total : playlistResponse.data.tracks.total;
+
+      // Calculate random offset (must be a multiple of 50, and within the total track count)
+      const maxOffset = Math.max(totalTracks - 50, 0);
+      const randomOffset = Math.floor(Math.random() * (maxOffset / 50)) * 50;
+
+      const tracksResponse = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
           limit: 50,
+          offset: randomOffset, // Use the random offset here
         },
       });
 
       const tracks =
-        playlistId === "top" ? response.data.items : response.data.tracks.items.map((item: any) => item.track);
-      const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
+        playlistId === "top"
+          ? tracksResponse.data.items
+          : tracksResponse.data.tracks.items.map((item: any) => item.track);
+
+      const playlistName = playlistId === "top" ? "Your Top Songs" : playlistResponse.data.name;
+
 
       console.log(tracks);
 
@@ -114,7 +137,8 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
 
       const playlistId = response.data.id;
       const playlistName = response.data.name;
-      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl =
+        response.data.images.length > 0 ? response.data.images[0].url : "";
 
       const fetchedPlaylist: Playlist = {
         id: playlistId,
@@ -127,7 +151,9 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
       setError("");
     } catch (error) {
       console.error("Error fetching playlist info:", error);
-      setError("Error fetching playlist info. Please check the URL and try again.");
+      setError(
+        "Error fetching playlist info. Please check the URL and try again."
+      );
       setSubmittedPlaylist(null);
     } finally {
       setLoading(false);
@@ -151,14 +177,15 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
   };
 
   const extractPlaylistIdFromUrl = (url: string): string | null => {
-    const regex = /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\??.*$/;
+    const regex =
+      /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\??.*$/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray1 text-green-500 text-center">
-      {!imagesLoaded ? ( // Show loading animation while images are not loaded
+      {!imagesLoaded ? (
         <Loading></Loading>
       ) : (
         <div className="min-h-screen flex flex-col justify-center items-center text-green-500 text-center bg-gray1 poppins-semibold p-4">
@@ -215,7 +242,9 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
               {submittedPlaylist ? (
                 <div
                   className="mt-20 relative overflow-hidden rounded-lg text-white text-xl flex items-center justify-between transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                  onClick={() => fetchTracks(submittedPlaylist.id, submittedPlaylist.url)}
+                  onClick={() =>
+                    fetchTracks(submittedPlaylist.id, submittedPlaylist.url)
+                  }
                   style={{
                     backgroundImage: `url(${submittedPlaylist.imageUrl})`,
                     backgroundSize: "cover",
@@ -237,7 +266,9 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
             </div>
           </div>
 
-          {loading && <p className="text-gray-500 absolute bottom-12">Loading...</p>}
+          {loading && (
+            <p className="text-gray-500 absolute bottom-12">Loading...</p>
+          )}
           {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
         </div>
       )}

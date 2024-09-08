@@ -16,7 +16,8 @@ const GuessInput: React.FC<GuessInputProps> = ({
   albumSuggestions,
   onSelectAlbum,
 }) => {
-  //console.log("Album suggestions:", albumSuggestions); // Debugging log
+  //console.log("Album suggestions:", albumSuggestions); 
+
 
   return (
     <div className="flex mt-4 relative">

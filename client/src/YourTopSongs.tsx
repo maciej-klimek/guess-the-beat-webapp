@@ -87,7 +87,9 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
           />
         </div>
       )}
-      {/* <div className="text-sm break-words w-full text-stone-800 mt-4">Access Token: {accessToken}</div> */}
+      <div className="text-sm break-words w-full text-stone-800 mt-4">
+        Access Token: {accessToken}
+      </div>
     </div>
   );
 };
