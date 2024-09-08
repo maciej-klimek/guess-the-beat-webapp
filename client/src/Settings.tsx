@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 interface SettingsProps {
@@ -8,15 +8,34 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
-  const [imageError, setImageError] = useState(false); // Track image load errors
+  const [displayedImage, setDisplayedImage] = useState("user_icon.jpg"); // Default image
 
   const toggleSettingsMenu = () => {
     setIsSettingsMenuOpen(!isSettingsMenuOpen);
   };
 
-  const handleImageError = () => {
-    setImageError(true); // Set error state if image fails to load
-  };
+  useEffect(() => {
+    // Function to check if the user image loads
+    const checkImage = () => {
+      if (userImage) {
+        const img = new Image();
+        img.src = userImage;
+        img.onload = () => {
+          // If the image loads successfully, use the userImage
+          setDisplayedImage(userImage);
+        };
+        img.onerror = () => {
+          // If the image fails to load, fall back to the static image
+          setDisplayedImage("user_icon.jpg");
+        };
+      } else {
+        // If there's no userImage provided, fall back to the static image
+        setDisplayedImage("user_icon.jpg");
+      }
+    };
+
+    checkImage(); // Call the function to check the image
+  }, [userImage]); // Re-run the effect when userImage changes
 
   return (
     <div className="absolute top-8 right-8 transition-transform duration-300 ease-in-out transform hover:scale-105">
@@ -27,9 +46,8 @@ const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
             <div className="text-xl">{userScore} points!</div>
           </div>
           <img
-            src={imageError || !userImage ? "user_icon.jpg" : userImage} // Fallback to static image if error occurs or no image
+            src={displayedImage} // Display the appropriate image
             alt="User"
-            onError={handleImageError} // Trigger fallback on error
             className="w-12 h-12 rounded-full"
           />
         </div>
