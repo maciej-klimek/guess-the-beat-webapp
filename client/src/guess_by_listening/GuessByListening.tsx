@@ -114,7 +114,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
             <div className="w-full">
               <HintButton
                 labelText="Release Date"
-                newText={selectedTrack?.album.release_date}
+                newText={selectedTrack?.album.release_date ?? ""}
                 resetOnChangeOf={selectedTrack}
                 onClick={handleDateClick}
                 pointsToRemove={10}
@@ -123,7 +123,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
             <div className="w-full">
               <HintButton
                 labelText="Artist name"
-                newText={selectedTrack?.artists[0].name}
+                newText={selectedTrack?.artists[0].name ?? ""}
                 resetOnChangeOf={selectedTrack}
                 onClick={handleArtistClick}
                 pointsToRemove={20}

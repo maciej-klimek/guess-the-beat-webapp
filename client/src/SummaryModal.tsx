@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 interface SummaryModalProps {
   finalScore: number;
   guessQueue: {
-    name: string;
+    name: string | null;
     artists: { name: string }[];
     album?: { images: { url: string }[] }; // Make album optional for GBL
     images?: { url: string }[];
@@ -76,14 +76,14 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                     item.album.images[0]?.url && (
                       <img
                         src={item.album.images[0].url}
-                        alt={item.name}
+                        alt={item.name ?? ""}
                         className="w-16 h-16 inline-block mr-4"
                       />
                     )}
                   {item.images && (
                     <img
                       src={item.images[0].url}
-                      alt={item.name}
+                      alt={item.name ?? ""}
                       className="w-16 h-16 inline-block mr-4"
                     />
                   )}
