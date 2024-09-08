@@ -15,17 +15,13 @@ interface PlaylistSelectionProps {
   accessToken: string;
 }
 
-const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
-  accessToken,
-}) => {
+const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [error, setError] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [submittedPlaylist, setSubmittedPlaylist] = useState<Playlist | null>(
-    null
-  );
+  const [submittedPlaylist, setSubmittedPlaylist] = useState<Playlist | null>(null);
   const [playlists, setPlaylists] = useState<Playlist[]>([
     {
       id: "top",
@@ -70,8 +66,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const playlistImageUrl =
-        response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
       return playlistImageUrl;
     } catch (error) {
       console.error("Error fetching playlist image:", error);
@@ -92,11 +87,10 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       });
 
       const tracks =
-        playlistId === "top"
-          ? response.data.items
-          : response.data.tracks.items.map((item: any) => item.track);
-      const playlistName =
-        playlistId === "top" ? "Your Top Songs" : response.data.name;
+        playlistId === "top" ? response.data.items : response.data.tracks.items.map((item: any) => item.track);
+      const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
+
+      console.log(tracks);
 
       navigate(`/guess-by-listening/${playlistId}`, {
         state: { tracks, playlistName },
@@ -120,8 +114,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
 
       const playlistId = response.data.id;
       const playlistName = response.data.name;
-      const playlistImageUrl =
-        response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
 
       const fetchedPlaylist: Playlist = {
         id: playlistId,
@@ -134,9 +127,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       setError("");
     } catch (error) {
       console.error("Error fetching playlist info:", error);
-      setError(
-        "Error fetching playlist info. Please check the URL and try again."
-      );
+      setError("Error fetching playlist info. Please check the URL and try again.");
       setSubmittedPlaylist(null);
     } finally {
       setLoading(false);
@@ -160,8 +151,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
   };
 
   const extractPlaylistIdFromUrl = (url: string): string | null => {
-    const regex =
-      /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\??.*$/;
+    const regex = /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\??.*$/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
@@ -175,7 +165,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           <div className="absolute top-8 right-8">
             <Link
               to="/"
-              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
+              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800 transition-transform duration-200 ease-in-out transform hover:scale-110"
             >
               <FaArrowRight className="text-xl" />
             </Link>
@@ -225,9 +215,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
               {submittedPlaylist ? (
                 <div
                   className="mt-20 relative overflow-hidden rounded-lg text-white text-xl flex items-center justify-between transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                  onClick={() =>
-                    fetchTracks(submittedPlaylist.id, submittedPlaylist.url)
-                  }
+                  onClick={() => fetchTracks(submittedPlaylist.id, submittedPlaylist.url)}
                   style={{
                     backgroundImage: `url(${submittedPlaylist.imageUrl})`,
                     backgroundSize: "cover",
@@ -249,9 +237,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
             </div>
           </div>
 
-          {loading && (
-            <p className="text-gray-500 absolute bottom-12">Loading...</p>
-          )}
+          {loading && <p className="text-gray-500 absolute bottom-12">Loading...</p>}
           {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
         </div>
       )}

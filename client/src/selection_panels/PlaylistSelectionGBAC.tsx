@@ -15,9 +15,7 @@ interface PlaylistSelectionProps {
   accessToken: string;
 }
 
-const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
-  accessToken,
-}) => {
+const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -96,15 +94,14 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const playlistImageUrl =
-        response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
       return playlistImageUrl;
     } catch (error) {
       console.error("Error fetching playlist image:", error);
       return "";
     }
   };
-  
+
   interface Album {
     id: string;
     images: { url: string }[];
@@ -154,12 +151,9 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       });
 
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-      const shuffledAlbumsArray = uniqueAlbumsArray.sort(
-        () => 0.5 - Math.random()
-      );
-      const cutUniqueAlbumsArray = shuffledAlbumsArray.slice(0, 3);
-      const playlistName =
-        playlistId === "top" ? "Your Top Songs" : response.data.name;
+      const shuffledAlbumsArray = uniqueAlbumsArray.sort(() => 0.5 - Math.random());
+      const cutUniqueAlbumsArray = shuffledAlbumsArray.slice(0, 10);
+      const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { tracks: cutUniqueAlbumsArray, playlistName },
       });
@@ -178,7 +172,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           <div className="absolute top-8 left-8">
             <Link
               to="/"
-              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
+              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800 transition-transform duration-200 ease-in-out transform hover:scale-110"
             >
               <FaArrowLeft className="text-xl" />
             </Link>
@@ -211,9 +205,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         <Loading></Loading>
       )}
 
-      {loading && (
-        <p className="text-gray-500 absolute bottom-12">Loading...</p>
-      )}
+      {loading && <p className="text-gray-500 absolute bottom-12">Loading...</p>}
       {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
     </div>
   );
