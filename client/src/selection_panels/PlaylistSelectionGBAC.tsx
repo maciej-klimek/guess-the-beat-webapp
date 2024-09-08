@@ -15,9 +15,7 @@ interface PlaylistSelectionProps {
   accessToken: string;
 }
 
-const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
-  accessToken,
-}) => {
+const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -96,8 +94,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const playlistImageUrl =
-        response.data.images.length > 0 ? response.data.images[0].url : "";
+      const playlistImageUrl = response.data.images.length > 0 ? response.data.images[0].url : "";
       return playlistImageUrl;
     } catch (error) {
       console.error("Error fetching playlist image:", error);
@@ -166,13 +163,10 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       });
 
       const uniqueAlbumsArray = Object.values(uniqueAlbums);
-      const shuffledAlbumsArray = uniqueAlbumsArray.sort(
-        () => 0.5 - Math.random()
-      );
-      const selectedAlbums = shuffledAlbumsArray.slice(0, 3);
+      const shuffledAlbumsArray = uniqueAlbumsArray.sort(() => 0.5 - Math.random());
+      const selectedAlbums = shuffledAlbumsArray.slice(0, 10);
 
-      const playlistName =
-        playlistId === "top" ? "Your Top Songs" : response.data.name;
+      const playlistName = playlistId === "top" ? "Your Top Songs" : response.data.name;
 
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { albums: selectedAlbums, playlistName },
@@ -225,9 +219,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         <Loading></Loading>
       )}
 
-      {loading && (
-        <p className="text-gray-500 absolute bottom-12">Loading...</p>
-      )}
+      {loading && <p className="text-gray-500 absolute bottom-12">Loading...</p>}
       {error && <p className="text-red-500 absolute bottom-12">{error}</p>}
     </div>
   );
