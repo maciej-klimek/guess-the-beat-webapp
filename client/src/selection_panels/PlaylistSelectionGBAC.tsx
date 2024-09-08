@@ -174,7 +174,6 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       const playlistName =
         playlistId === "top" ? "Your Top Songs" : response.data.name;
 
-
       navigate(`/guess-by-album-cover/${playlistId}`, {
         state: { albums: selectedAlbums, playlistName },
       });

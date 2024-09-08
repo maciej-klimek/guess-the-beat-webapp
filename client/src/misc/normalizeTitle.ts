@@ -1,6 +1,6 @@
 export const normalizeTitle = (title: string): string => {
   const suffixPattern =
-    /(remaster|remastered|ft\..*|feat\..*|official|video|live|acoustic|instrumental|cover|deluxe|expanded|-)/gi;
+    /(remaster|remastered|ft\..*|feat\..*|official|video|live|acoustic|instrumental|cover|deluxe|expanded|special|extra|remix|-|)/gi;
 
   return title
     .replace(suffixPattern, "") // Remove suffixes and everything after them

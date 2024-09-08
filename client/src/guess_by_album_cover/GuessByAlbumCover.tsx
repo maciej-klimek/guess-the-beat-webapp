@@ -227,7 +227,6 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
               onSubmit={handleCheckAnswer}
               albumSuggestions={albumSuggestionsArray}
               onSelectAlbum={handleAlbumSelection}
-              pickedAlbum={0}
             />
 
             {showResult && (
