@@ -8,8 +8,14 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
+  const [imageError, setImageError] = useState(false); // Track image load errors
+
   const toggleSettingsMenu = () => {
     setIsSettingsMenuOpen(!isSettingsMenuOpen);
+  };
+
+  const handleImageError = () => {
+    setImageError(true); // Set error state if image fails to load
   };
 
   return (
@@ -20,7 +26,12 @@ const Settings: React.FC<SettingsProps> = ({ userImage, userScore }) => {
             <div className="text-sm text-neutral-700">You currently have</div>
             <div className="text-xl">{userScore} points!</div>
           </div>
-          <img src={userImage || "user_icon.jpg"} alt="User" className="w-12 h-12 rounded-full" />
+          <img
+            src={imageError || !userImage ? "user_icon.jpg" : userImage} // Fallback to static image if error occurs or no image
+            alt="User"
+            onError={handleImageError} // Trigger fallback on error
+            className="w-12 h-12 rounded-full"
+          />
         </div>
       </button>
       {isSettingsMenuOpen && (
