@@ -24,17 +24,15 @@ interface Album {
   genres?: string[];
 }
 
-const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
-  accessToken,
-}) => {
+const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) => {
   const location = useLocation();
-  const albums: Album[] = location.state?.tracks || [];
+  const albums: Album[] = location.state?.albums || [];
   const playlistName: string | undefined = location.state?.playlistName;
-  const [visiblePanels, setVisiblePanels] = useState<number[]>([]);
+  const [visiblePanelsArray, setVisiblePanelsArray] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [guessedAlbum, setGuessedAlbum] = useState<Album | null>(null);
-  const [emptyHeartsCount, setEmptyHeartsCount] = useState(0);
-  const [albumSuggestions, setAlbumSuggestions] = useState<Album[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [failsCount, setFailsCount] = useState(0);
+  const [albumSuggestionsArray, setAlbumSuggestions] = useState<Album[]>([]);
   const [pickedAlbum, setPickedAlbum] = useState(0);
   const [pointCounter, setPointCounter] = useState(100);
   const [pointSummary, setPointSummary] = useState(0);
@@ -64,14 +62,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         return;
       }
       try {
-        const response = await axios.get(
-          `https://api.spotify.com/v1/search?q=${inputValue}&type=album`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`https://api.spotify.com/v1/search?q=${inputValue}&type=album`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
         const albums = response.data.albums.items.map((album: Album) => ({
           id: album.id,
           images: album.images,
@@ -94,7 +89,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     if (albums.length > 0) {
       const randomIndex = getRandomInt(0, albums.length - 1);
       const selectedAlbum = albums[randomIndex];
-      setGuessedAlbum(selectedAlbum);
+      setSelectedAlbum(selectedAlbum);
       setAlbumQueue((prevQueue) => [...prevQueue, selectedAlbum]); // Add to albumQueue
       albums.splice(randomIndex, 1);
     } else {
@@ -108,10 +103,10 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const resetGame = () => {
-    setVisiblePanels([]);
+    setVisiblePanelsArray([]);
     setInputValue("");
-    setGuessedAlbum(null);
-    setEmptyHeartsCount(0);
+    setSelectedAlbum(null);
+    setFailsCount(0);
     setPointCounter(100);
     setShowResult(false);
     setIsCorrectGuess(false);
@@ -119,20 +114,18 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const removeBlur = async () => {
     return new Promise<void>((resolve) => {
-      const availableIndexes = Array.from(
-        { length: 9 },
-        (_, index) => index
-      ).filter((index) => !visiblePanels.includes(index));
+      const availableIndexes = Array.from({ length: 9 }, (_, index) => index).filter(
+        (index) => !visiblePanelsArray.includes(index)
+      );
 
       if (availableIndexes.length > 0) {
-        const randomIndex =
-          availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-        setVisiblePanels((prev) => [...prev, randomIndex]);
-        setEmptyHeartsCount((prev) => prev + 1);
+        const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        setVisiblePanelsArray((prev) => [...prev, randomIndex]);
+        setFailsCount((prev) => prev + 1);
         setPickedAlbum(0);
         setPointCounter((prev) => prev - 20);
 
-        if (emptyHeartsCount + 1 >= 4) {
+        if (failsCount + 1 >= 4) {
           setPickedAlbum(0);
           setInputValue("");
           setPointCounter(-50);
@@ -168,9 +161,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const handleCheckAnswer = async () => {
     await removeBlur(); // Wait for removeBlur to complete
 
-    if (
-      normalizeTitle(inputValue) !== normalizeTitle(guessedAlbum?.name ?? "")
-    ) {
+    if (normalizeTitle(inputValue) !== normalizeTitle(selectedAlbum?.name ?? "")) {
       setInputValue("");
     } else {
       setIsCorrectGuess(true);
@@ -180,11 +171,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setPointSummary((prev) => prev + pointCounter);
       if (userData) {
         const newScore = (userData.score ?? 0) + pointCounter;
-        await UserDataManager.updateUserScore(
-          userData.id,
-          userData.display_name,
-          newScore
-        );
+        await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
         setUserData((prev) => ({ ...prev, score: newScore }));
       }
     }
@@ -215,38 +202,27 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       </div>
       <h2 className="text-4xl md:text-5xl mt-6">
         Guess By Album Cover 💽 <br />
-        {playlistName && (
-          <span className="text-lg text-gray-700">from {playlistName}</span>
-        )}
+        {playlistName && <span className="text-lg text-gray-700">from {playlistName}</span>}
       </h2>
       <div className="flex w-full items-center justify-center space-x-28">
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
-          <span className="text-sm text-neutral-700 mb-4">
-            Points You can get:
-          </span>
-          <span
-            style={{ color: `hsl(${(pointCounter / 100) * 137}, 63%, 56%)` }}
-          >
-            {pointCounter}/100
-          </span>
+          <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
+          <span style={{ color: `hsl(${(pointCounter / 100) * 137}, 63%, 56%)` }}>{pointCounter}/100</span>
         </div>
 
         {/* Album Cover & Guess Input */}
-        {guessedAlbum && (
+        {selectedAlbum && (
           <div className="gap-8 mt-4 max-w-4xl bg-gray2 p-12 rounded-2xl">
-            {guessedAlbum.images[0] && (
-              <AlbumCover
-                imageUrl={guessedAlbum.images[0].url}
-                visiblePanels={visiblePanels}
-              />
+            {selectedAlbum.images[0] && (
+              <AlbumCover imageUrl={selectedAlbum.images[0].url} visiblePanels={visiblePanelsArray} />
             )}
-            <Hearts emptyHeartsCount={emptyHeartsCount} />
+            <Hearts emptyHeartsCount={failsCount} />
             <GuessInput
               inputValue={inputValue}
               onInputChange={(e) => setInputValue(e.target.value)}
               onSubmit={handleCheckAnswer}
-              albumSuggestions={albumSuggestions}
+              albumSuggestions={albumSuggestionsArray}
               onSelectAlbum={handleAlbumSelection}
               pickedAlbum={pickedAlbum}
             />
@@ -254,7 +230,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             {showResult && (
               <ResultModal
                 isCorrectGuess={isCorrectGuess}
-                track={guessedAlbum}
+                track={selectedAlbum}
                 handleNextTrack={handleNextTrack}
                 availablePoints={pointCounter}
               />
@@ -264,15 +240,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
         {/* Hint Buttons */}
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
-          <h3 className="text-base text-neutral-700 font-semibold mb-4">
-            Need some hints?
-          </h3>
+          <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
           <div className="flex flex-col space-y-4 w-full">
             <div className="w-full">
               <HintButton
                 labelText="Artist name"
-                newText={guessedAlbum?.artists[0].name ?? ""}
-                resetOnChangeOf={guessedAlbum}
+                newText={selectedAlbum?.artists[0].name ?? ""}
+                resetOnChangeOf={selectedAlbum}
                 onClick={handleArtistClick}
                 pointsToRemove={10}
               />
@@ -280,8 +254,8 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             <div className="w-full">
               <HintButton
                 labelText="Release Date"
-                newText={guessedAlbum?.release_date ?? ""}
-                resetOnChangeOf={guessedAlbum}
+                newText={selectedAlbum?.release_date ?? ""}
+                resetOnChangeOf={selectedAlbum}
                 onClick={handleDateClick}
                 pointsToRemove={10}
               />
@@ -290,13 +264,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         </div>
       </div>
 
-      {showSummary && (
-        <SummaryModal
-          finalScore={pointSummary}
-          guessQueue={albumQueue}
-          mode="BGAC"
-        />
-      )}
+      {showSummary && <SummaryModal finalScore={pointSummary} guessQueue={albumQueue} mode="BGAC" />}
     </div>
   );
 };
