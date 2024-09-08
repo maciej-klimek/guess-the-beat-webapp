@@ -21,7 +21,7 @@ interface Album {
   release_date: string;
   name: string;
   artists: { name: string }[];
-  genres: string[];
+  genres?: string[];
 }
 
 const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
@@ -148,13 +148,13 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
-    setInputValue(selectedAlbum.name);
+    setInputValue(selectedAlbum.name ?? "");
     setPickedAlbum(0);
     setAlbumSuggestions([]);
   };
 
   const handleCheckAnswear = async () => {
-    if (normalizeTitle(inputValue) !== normalizeTitle(guessedAlbum?.name)) {
+    if (normalizeTitle(inputValue) !== normalizeTitle(guessedAlbum?.name ?? "")) {
       removeBlur();
       setInputValue("");
     } else {

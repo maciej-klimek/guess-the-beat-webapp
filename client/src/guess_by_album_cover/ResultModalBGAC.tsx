@@ -6,7 +6,7 @@ interface Album {
   release_date: string;
   name: string;
   artists: { name: string }[];
-  genres: string[];
+  genres?: string[];
 }
 
 interface ResultModalProps {
@@ -43,7 +43,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
 
         <img
           src={track.images[0].url}
-          alt={track.name}
+          alt={track.name ?? "Unknown Album"}
           className="w-48 h-48 mx-auto mb-4 rounded-xl"
         />
         <p className="text-lg font-semibold text-gray-800">{track.name}</p>

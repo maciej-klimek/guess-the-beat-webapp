@@ -104,6 +104,15 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
       return "";
     }
   };
+  
+  interface Album {
+    id: string;
+    images: { url: string }[];
+    release_date: string;
+    name: string;
+    artists: { name: string }[];
+    genres?: string[];
+  }
 
   const fetchAlbums = async (playlistId: string, url: string) => {
     setLoading(true);
@@ -138,7 +147,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
               genres: item.track.album.genres,
             }));
 
-      albums.forEach((album) => {
+      albums.forEach((album: Album) => {
         if (!uniqueAlbums[album.id]) {
           uniqueAlbums[album.id] = album;
         }
