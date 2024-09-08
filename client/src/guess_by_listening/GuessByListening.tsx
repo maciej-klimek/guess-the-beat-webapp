@@ -73,17 +73,13 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       </div>
       <h2 className="text-4xl md:text-5xl mt-8 mb-12">
         Guess By Listening 🎧 <br />
-        {playlistName && (
-          <span className="text-lg text-neutral-700">from {playlistName}</span>
-        )}
+        {playlistName && <span className="text-lg text-neutral-700">from {playlistName}</span>}
       </h2>
 
       <div className="flex w-full items-center justify-center space-x-28">
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
-          <span className="text-sm text-neutral-700 mb-4">
-            Points You can get:
-          </span>
+          <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
           <span
             style={{
               color: `hsl(${(avaliavlePoints / 100) * 137}, 63%, 56%)`,
@@ -107,9 +103,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
 
         {/* Yellow Buttons */}
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
-          <h3 className="text-base text-neutral-700 font-semibold mb-4">
-            Need some hints?
-          </h3>
+          <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
           <div className="flex flex-col space-y-4 w-full">
             <div className="w-full">
               <HintButton
@@ -134,13 +128,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       </div>
 
       {/* Summary Modal */}
-      {showSummary && (
-        <SummaryModal
-          finalScore={totalPoints}
-          guessQueue={trackQueue}
-          mode="GBL"
-        />
-      )}
+      {showSummary && <SummaryModal finalScore={totalPoints} guessQueue={trackQueue} mode="GBL" />}
     </div>
   );
 };

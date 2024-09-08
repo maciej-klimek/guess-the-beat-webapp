@@ -9,6 +9,7 @@ import UserDataManager from "../UserDataManager";
 import { useAuth } from "../auth/Auth";
 import { FaCheck, FaChevronDown } from "react-icons/fa";
 import { normalizeTitle } from "../misc/normalizeTitle";
+import Tooltip from "./Tooltip";
 
 interface TrackGuesserProps {
   track: {
@@ -23,12 +24,7 @@ interface TrackGuesserProps {
   setAvaliavlePoints: (avaliablePoints: number) => void;
 }
 
-const TrackGuesser: React.FC<TrackGuesserProps> = ({
-  track,
-  onNextTrack,
-  avaliablePoints,
-  setAvaliavlePoints,
-}) => {
+const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliablePoints, setAvaliavlePoints }) => {
   const [userGuess, setUserGuess] = useState("");
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [remainingChances, setRemainingChances] = useState(5);
@@ -60,11 +56,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({
       setShowResult(true);
       if (user) {
         const newScore = (user.score ?? 0) + avaliablePoints;
-        await UserDataManager.updateUserScore(
-          user.id,
-          user.display_name,
-          newScore
-        );
+        await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
         setUser({ ...user, score: newScore });
       }
     } else {
@@ -76,11 +68,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({
         setShowResult(true);
         if (user) {
           const newScore = (user.score ?? 0) - 50;
-          await UserDataManager.updateUserScore(
-            user.id,
-            user.display_name,
-            newScore
-          );
+          await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
           setUser({ ...user, score: newScore });
         }
       }
@@ -130,10 +118,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({
       <div className="bg-gray2 p-8 rounded-xl shadow-md mb-4 ">
         <audio ref={audioRef} src={track.preview_url} className="w-full mb-4" />
         <div className="flex justify-self-center">
-          <PlayButton
-            playAudioSegment={playAudioSegment}
-            isPlaying={isPlaying}
-          />
+          <PlayButton playAudioSegment={playAudioSegment} isPlaying={isPlaying} />
           <PlaybackBar
             playbackDuration={playbackDuration}
             isPlaying={isPlaying}
@@ -143,39 +128,37 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({
         </div>
         <ChancesDisplay remainingChances={remainingChances} />
         <div className="bg-gray1 h-1 w-full mt-8 mb-2 rounded-xl"></div>
-        <div className="flex justify-center ">
+        <div className="flex justify-center">
           <div className="flex items-center space-x-4">
-            <div className="flex flex-col items-center">
-              <button
-                onClick={toggleSuggestions}
-                className={`flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 mt-6 ${
-                  isSuggestionsLocked
-                    ? "opacity-50 cursor-not-allowed mb-6"
-                    : ""
-                }`}
-                disabled={isSuggestionsLocked}
-              >
-                <FaChevronDown className="text-xl" />
-              </button>
-              {!isSuggestionsLocked && (
-                <span className="text-red-800 text-xs mt-2">-50</span>
-              )}
-            </div>
+            <Tooltip text="Show suggestion list">
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={toggleSuggestions}
+                  className={`flex flex-col items-center p-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 mt-6 ${
+                    isSuggestionsLocked ? "opacity-50 cursor-not-allowed mb-6" : ""
+                  }`}
+                  disabled={isSuggestionsLocked}
+                >
+                  <FaChevronDown className="text-xl" />
+                </button>
+                {!isSuggestionsLocked && <span className="text-red-800 text-xs mt-2">-50</span>}
+              </div>
+            </Tooltip>
+
             <UserInput userGuess={userGuess} setUserGuess={setUserGuess} />
-            <button
-              onClick={handleGuess}
-              className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
-            >
-              <FaCheck className="text-xl" />
-            </button>
+
+            <Tooltip text="Submit!">
+              <button
+                onClick={handleGuess}
+                className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+              >
+                <FaCheck className="text-xl" />
+              </button>
+            </Tooltip>
           </div>
         </div>
-        {showSuggestions && (
-          <SuggestedSongList
-            inputValue={userGuess}
-            onSongSelect={handleSongSelect}
-          />
-        )}
+
+        {showSuggestions && <SuggestedSongList inputValue={userGuess} onSongSelect={handleSongSelect} />}
       </div>
 
       {showResult && (
