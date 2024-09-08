@@ -21,14 +21,17 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
   useEffect(() => {
     const fetchTopTracks = async () => {
       try {
-        const response = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: {
-            limit: 16,
-          },
-        });
+        const response = await axios.get(
+          "https://api.spotify.com/v1/me/top/tracks",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              limit: 16,
+            },
+          }
+        );
         setTopTracks(response.data.items);
       } catch (error) {
         console.error("Error fetching top tracks:", error);
@@ -52,11 +55,23 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
       <h2 className="text-3xl mt-4">Your Top Songs</h2>
       <div className="w-auto max-w-4xl flex-grow grid grid-cols-4 gap-4 justify-items-center mt-8">
         {topTracks.map((track, index) => (
-          <div key={index} className="p-4 border rounded-xl cursor-pointer flex flex-col items-center w-52">
-            <img src={track.album.images[0].url} alt={track.name} className="w-16 h-16 mx-auto mb-2" />
+          <div
+            key={index}
+            className="p-4 border rounded-xl cursor-pointer flex flex-col items-center w-52"
+          >
+            <img
+              src={track.album.images[0].url}
+              alt={track.name}
+              className="w-16 h-16 mx-auto mb-2"
+            />
             <h4 className="text-xl text-white text-center">{track.name}</h4>
-            <p className="text-md text-gray-700 text-center">{track.artists.map((artist) => artist.name).join(", ")}</p>
-            <button onClick={() => playTrack(track)} className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md">
+            <p className="text-md text-gray-700 text-center">
+              {track.artists.map((artist) => artist.name).join(", ")}
+            </p>
+            <button
+              onClick={() => playTrack(track)}
+              className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md"
+            >
               Play
             </button>
           </div>
@@ -65,10 +80,14 @@ const GuessByListening: React.FC<GuessByListeningProps> = ({ accessToken }) => {
       {selectedTrack && (
         <div className="mb-4">
           <h3 className="text-lg mb-2">Now Playing: {selectedTrack.name}</h3>
-          <audio controls src={selectedTrack.preview_url} className="w-full max-w-md mx-auto" />
+          <audio
+            controls
+            src={selectedTrack.preview_url}
+            className="w-full max-w-md mx-auto"
+          />
         </div>
       )}
-      <div className="text-sm break-words w-full text-stone-800 mt-4">Access Token: {accessToken}</div>
+      {/* <div className="text-sm break-words w-full text-stone-800 mt-4">Access Token: {accessToken}</div> */}
     </div>
   );
 };
