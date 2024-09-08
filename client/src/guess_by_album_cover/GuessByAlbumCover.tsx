@@ -43,6 +43,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   const [isCorrectGuess, setIsCorrectGuess] = useState(false);
   const [userData, setUserData] = useState<any>(null); // State to store user data
   const [albumQueue, setAlbumQueue] = useState<Album[]>([]); // New state to track album queue
+  const [totalPointsDeducted, setTotalPointsDeducted] = useState(0); // New state to track total points deducted
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -117,37 +118,45 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const removeBlur = async () => {
-    const availableIndexes = Array.from(
-      { length: 9 },
-      (_, index) => index
-    ).filter((index) => !visiblePanels.includes(index));
-    console.log(pointCounter);
+    return new Promise<void>((resolve) => {
+      const availableIndexes = Array.from(
+        { length: 9 },
+        (_, index) => index
+      ).filter((index) => !visiblePanels.includes(index));
 
-    if (availableIndexes.length > 0) {
-      const randomIndex =
-        availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-      setVisiblePanels([...visiblePanels, randomIndex]);
-      setEmptyHeartsCount(emptyHeartsCount + 1);
-      setPickedAlbum(0);
-      setPointCounter(pointCounter - 20);
-      if (emptyHeartsCount === 4) {
+      if (availableIndexes.length > 0) {
+        const randomIndex =
+          availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        setVisiblePanels((prev) => [...prev, randomIndex]);
+        setEmptyHeartsCount((prev) => prev + 1);
         setPickedAlbum(0);
-        setInputValue("");
-        console.log("punty1:", pointCounter);
-        setPointCounter(-50);
-        console.log("punty2:", pointCounter);
-        setIsCorrectGuess(false);
-        setShowResult(true);
-        setPointSummary(pointSummary + pointCounter);
-        const newScore = (userData.score ?? 0) + pointCounter;
-        await UserDataManager.updateUserScore(
-          userData.id,
-          userData.display_name,
-          newScore
-        );
-        setUserData({ ...userData, score: newScore }); // Update local user state
+        setPointCounter((prev) => prev - 20);
+
+        if (emptyHeartsCount + 1 >= 4) {
+          setPickedAlbum(0);
+          setInputValue("");
+          setPointCounter(-50);
+          setTotalPointsDeducted((prev) => prev + 50); // Add to total points deducted
+          setIsCorrectGuess(false);
+          setShowResult(true);
+          setPointSummary((prev) => prev - 50); // Deduct 50 points for a loss
+          if (userData) {
+            UserDataManager.updateUserScore(
+              userData.id,
+              userData.display_name,
+              userData.score - 50 // Deduct 50 points for a loss
+            );
+            setUserData((prev) => ({
+              ...prev,
+              score: prev?.score - 50,
+            }));
+          }
+        }
+        resolve();
+      } else {
+        resolve();
       }
-    }
+    });
   };
 
   const handleAlbumSelection = (selectedAlbum: Album) => {
@@ -156,41 +165,42 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
     setAlbumSuggestions([]);
   };
 
-  const handleCheckAnswear = async () => {
+  const handleCheckAnswer = async () => {
+    await removeBlur(); // Wait for removeBlur to complete
+
     if (
       normalizeTitle(inputValue) !== normalizeTitle(guessedAlbum?.name ?? "")
     ) {
-      removeBlur();
       setInputValue("");
     } else {
-      removeBlur();
       setIsCorrectGuess(true);
       setPickedAlbum(0);
       setInputValue("");
       setShowResult(true);
-      setPointSummary(pointSummary + pointCounter);
-      const newScore = (userData.score ?? 0) + pointCounter;
-      await UserDataManager.updateUserScore(
-        userData.id,
-        userData.display_name,
-        newScore
-      );
-      setUserData({ ...userData, score: newScore }); // Update local user state
+      setPointSummary((prev) => prev + pointCounter);
+      if (userData) {
+        const newScore = (userData.score ?? 0) + pointCounter;
+        await UserDataManager.updateUserScore(
+          userData.id,
+          userData.display_name,
+          newScore
+        );
+        setUserData((prev) => ({ ...prev, score: newScore }));
+      }
     }
   };
 
   const handleNextTrack = () => {
     setShowResult(false);
-
     handlePlayGame();
   };
 
   const handleDateClick = () => {
-    setPointCounter(pointCounter - 10);
+    setPointCounter((prev) => prev - 10);
   };
 
   const handleArtistClick = () => {
-    setPointCounter(pointCounter - 10);
+    setPointCounter((prev) => prev - 10);
   };
 
   return (
@@ -235,7 +245,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
             <GuessInput
               inputValue={inputValue}
               onInputChange={(e) => setInputValue(e.target.value)}
-              onSubmit={handleCheckAnswear}
+              onSubmit={handleCheckAnswer}
               albumSuggestions={albumSuggestions}
               onSelectAlbum={handleAlbumSelection}
               pickedAlbum={pickedAlbum}
@@ -246,7 +256,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
                 isCorrectGuess={isCorrectGuess}
                 track={guessedAlbum}
                 handleNextTrack={handleNextTrack}
-                avaliablePoints={pointCounter}
+                availablePoints={pointCounter}
               />
             )}
           </div>
