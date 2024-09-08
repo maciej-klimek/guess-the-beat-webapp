@@ -172,7 +172,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({ accessToken }) =>
           <div className="absolute top-8 left-8">
             <Link
               to="/"
-              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
+              className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800 transition-transform duration-200 ease-in-out transform hover:scale-110"
             >
               <FaArrowLeft className="text-xl" />
             </Link>

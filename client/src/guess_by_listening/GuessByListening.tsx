@@ -35,7 +35,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
 
   const chooseRandomTracks = (tracks: Track[]) => {
     const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5); // Shuffle tracks
-    const selectedTracks = shuffledTracks.slice(0, 3); // Select 10 random tracks
+    const selectedTracks = shuffledTracks.slice(0, 10); // Select 10 random tracks
     setTrackQueue(selectedTracks);
     setSelectedTrack(selectedTracks[0]); // Set the first track
   };
@@ -66,7 +66,7 @@ const GuessByListening: React.FC<GuessByListeningProps> = () => {
       <div className="absolute top-8 right-8">
         <Link
           to="/"
-          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800"
+          className="flex items-center justify-center text-white bg-gray2 w-12 h-12 rounded-full hover:bg-neutral-800 transition-transform duration-200 ease-in-out transform hover:scale-110"
         >
           <FaArrowRight className="text-xl" />
         </Link>
