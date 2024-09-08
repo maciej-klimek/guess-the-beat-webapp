@@ -9,7 +9,7 @@ import UserDataManager from "../UserDataManager";
 import { useAuth } from "../auth/Auth";
 import { FaCheck, FaChevronDown } from "react-icons/fa";
 import { normalizeTitle } from "../misc/normalizeTitle";
-import Tooltip from "./Tooltip";
+import Tooltip from "../misc/Tooltip";
 
 interface TrackGuesserProps {
   track: {
@@ -67,6 +67,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
       if (remainingChances - 1 === 0) {
         setShowResult(true);
         if (user) {
+          setAvaliavlePoints(-50);
           const newScore = (user.score ?? 0) - 50;
           await UserDataManager.updateUserScore(user.id, user.display_name, newScore);
           setUser({ ...user, score: newScore });
@@ -106,7 +107,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
 
   const toggleSuggestions = () => {
     if (!isSuggestionsLocked) {
-      setAvaliavlePoints(avaliablePoints - 50);
+      setAvaliavlePoints(avaliablePoints - 30);
       setShowSuggestions((prev) => !prev);
       setIsSuggestionsLocked(true);
     }
@@ -141,7 +142,7 @@ const TrackGuesser: React.FC<TrackGuesserProps> = ({ track, onNextTrack, avaliab
                 >
                   <FaChevronDown className="text-xl" />
                 </button>
-                {!isSuggestionsLocked && <span className="text-red-800 text-xs mt-2">-50</span>}
+                {!isSuggestionsLocked && <span className="text-red-800 text-xs mt-2">-30</span>}
               </div>
             </Tooltip>
 

@@ -1,4 +1,6 @@
 import React from "react";
+import { FaCheck } from "react-icons/fa";
+import Tooltip from "../misc/Tooltip";
 
 interface SubmitButtonProps {
   onSubmit: () => void;
@@ -6,12 +8,12 @@ interface SubmitButtonProps {
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ onSubmit }) => {
   return (
-    <button
-      onClick={onSubmit}
-      className="p-2 bg-blue-500 hover:bg-slate-600 text-white rounded-lg ml-4"
-    >
-      Submit
-    </button>
+    <Tooltip text="Submit!">
+      {" "}
+      <button onClick={onSubmit} className="p-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600">
+        <FaCheck className="text-xl" />
+      </button>
+    </Tooltip>
   );
 };
 
