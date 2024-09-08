@@ -56,7 +56,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
             isCorrectGuess ? "bg-green-500" : "bg-red-500"
           } text-white rounded-md shadow-md hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-opacity-50`}
         >
-          Next Track
+          Next Album
         </button>
       </div>
     </div>

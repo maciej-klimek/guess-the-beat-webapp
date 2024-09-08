@@ -17,7 +17,7 @@ const AlbumCover: React.FC<AlbumCoverProps> = ({ imageUrl, visiblePanels }) => {
               className={`w-full h-full ${
                 visiblePanels.includes(index)
                   ? "bg-transparent"
-                  : "backdrop-filter backdrop-blur-lg"
+                  : "backdrop-blur-lg"
               }`}
             />
           ))}
