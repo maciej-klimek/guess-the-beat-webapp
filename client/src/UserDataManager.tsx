@@ -36,7 +36,6 @@ const UserDataManager: UserDataManager = {
 
       const user = spotifyUserResponse.data;
 
-      // Fetch user score from your database server
       const databaseServerResponseScore = await axios.post(
         "http://localhost:2115/get-user-data",
         {

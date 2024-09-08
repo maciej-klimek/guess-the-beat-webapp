@@ -22,7 +22,7 @@ const useFetchSongsName = (
 
       try {
         const response = await axios.get(
-          `https://api.spotify.com/v1/search?q=${inputValue}&type=track&limit=10`, // Added limit=10 here
+          `https://api.spotify.com/v1/search?q=${inputValue}&type=track&limit=10`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

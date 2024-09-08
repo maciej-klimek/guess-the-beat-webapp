@@ -3,7 +3,7 @@ import ByListeningPanel from "./selection_panels/ByListeningPanel";
 import ByAlbumCoverPanel from "./selection_panels/ByAlbumCoverPanel";
 import Settings from "./Settings";
 import { useEffect, useState } from "react";
-import UserDataManager from "./UserDataManager"; // Import ScoreManagement
+import UserDataManager from "./UserDataManager";
 
 interface HomeProps {
   accessToken: string | null;

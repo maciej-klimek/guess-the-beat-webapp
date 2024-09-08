@@ -126,7 +126,7 @@ const PlaylistSelection: React.FC<PlaylistSelectionProps> = ({
         },
       });
 
-      const uniqueAlbums: { [key: string]: any } = {}; // Obiekt do przechowywania unikalnych albumów
+      const uniqueAlbums: { [key: string]: any } = {};
 
       const albums =
         playlistId === "top"
