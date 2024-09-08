@@ -24,9 +24,7 @@ interface Album {
   genres?: string[];
 }
 
-const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
-  accessToken,
-}) => {
+const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({ accessToken }) => {
   const [visiblePanelsArray, setVisiblePanelsArray] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
@@ -63,14 +61,11 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         return;
       }
       try {
-        const response = await axios.get(
-          `https://api.spotify.com/v1/search?q=${inputValue}&type=album`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`https://api.spotify.com/v1/search?q=${inputValue}&type=album`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
         const albums = response.data.albums.items.map((album: Album) => ({
           id: album.id,
           images: album.images,
@@ -112,14 +107,12 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
   const removeBlur = async () => {
     return new Promise<void>((resolve) => {
-      const availableIndexes = Array.from(
-        { length: 9 },
-        (_, index) => index
-      ).filter((index) => !visiblePanelsArray.includes(index));
+      const availableIndexes = Array.from({ length: 9 }, (_, index) => index).filter(
+        (index) => !visiblePanelsArray.includes(index)
+      );
 
       if (availableIndexes.length > 0) {
-        const randomIndex =
-          availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
         setVisiblePanelsArray((prev) => [...prev, randomIndex]);
         setFailsCount((prev) => prev + 1);
         setPointCount((prev) => prev - 20);
@@ -137,9 +130,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
   };
 
   const handleCheckAnswer = async () => {
-    if (
-      normalizeTitle(inputValue) !== normalizeTitle(selectedAlbum?.name ?? "")
-    ) {
+    if (normalizeTitle(inputValue) !== normalizeTitle(selectedAlbum?.name ?? "")) {
       await removeBlur();
       if (failsCount >= 4) {
         setInputValue("");
@@ -148,11 +139,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         setShowResult(true);
         setPointSummary((prev) => prev - 50);
         if (userData) {
-          UserDataManager.updateUserScore(
-            userData.id,
-            userData.display_name,
-            userData.score - 50
-          );
+          UserDataManager.updateUserScore(userData.id, userData.display_name, userData.score - 50);
           setUserData((prev) => ({
             ...prev,
             score: prev?.score - 50,
@@ -166,11 +153,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
       setPointSummary((prev) => prev + pointCount);
       if (userData) {
         const newScore = (userData.score ?? 0) + pointCount;
-        await UserDataManager.updateUserScore(
-          userData.id,
-          userData.display_name,
-          newScore
-        );
+        await UserDataManager.updateUserScore(userData.id, userData.display_name, newScore);
         setUserData((prev) => ({ ...prev, score: newScore }));
       }
     }
@@ -194,31 +177,22 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
           <FaArrowLeft className="text-xl" />
         </Link>
       </div>
-      <h2 className="text-4xl md:text-5xl mt-6">
+      <h2 className="text-4xl md:text-5xl ">
         Guess By Album Cover 💽 <br />
-        {playlistName && (
-          <span className="text-lg text-gray-700">from {playlistName}</span>
-        )}
+        {playlistName && <span className="text-lg text-gray-700">from {playlistName}</span>}
       </h2>
       <div className="flex w-full items-center justify-center space-x-28">
         {/* Available Points */}
         <div className="text-4xl flex flex-col items-start bg-gray2 p-8 rounded-2xl">
-          <span className="text-sm text-neutral-700 mb-4">
-            Points You can get:
-          </span>
-          <span style={{ color: `hsl(${(pointCount / 100) * 137}, 63%, 56%)` }}>
-            {pointCount}/100
-          </span>
+          <span className="text-sm text-neutral-700 mb-4">Points You can get:</span>
+          <span style={{ color: `hsl(${(pointCount / 100) * 137}, 63%, 56%)` }}>{pointCount}/100</span>
         </div>
 
         {/* Album Cover & Guess Input */}
         {selectedAlbum && (
-          <div className="gap-8 mt-4 max-w-4xl bg-gray2 p-12 rounded-2xl">
+          <div className="gap-8 mt-12 max-w-4xl bg-gray2 p-12 rounded-2xl">
             {selectedAlbum.images[0] && (
-              <AlbumCover
-                imageUrl={selectedAlbum.images[0].url}
-                visiblePanels={visiblePanelsArray}
-              />
+              <AlbumCover imageUrl={selectedAlbum.images[0].url} visiblePanels={visiblePanelsArray} />
             )}
             <Hearts emptyHeartsCount={failsCount} />
             <GuessInput
@@ -242,9 +216,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
 
         {/* Hint Buttons */}
         <div className="flex flex-col items-center bg-gray2 p-8 rounded-2xl">
-          <h3 className="text-base text-neutral-700 font-semibold mb-4">
-            Need some hints?
-          </h3>
+          <h3 className="text-base text-neutral-700 font-semibold mb-4">Need some hints?</h3>
           <div className="flex flex-col space-y-4 w-full">
             <div className="w-full">
               <HintButton
@@ -268,13 +240,7 @@ const GuessByAlbumCover: React.FC<GuessByAlbumCoverProps> = ({
         </div>
       </div>
 
-      {showSummary && (
-        <SummaryModal
-          finalScore={pointSummary}
-          guessQueue={albumQueue}
-          mode="BGAC"
-        />
-      )}
+      {showSummary && <SummaryModal finalScore={pointSummary} guessQueue={albumQueue} mode="BGAC" />}
     </div>
   );
 };
